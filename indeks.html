@@ -1,0 +1,3352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROCEDURE TEXT – Interactive English Learning | SMA Kelas XI Fase F</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #1d4ed8;
+      --deep-blue: #1e3a8a;
+      --accent-orange: #f97316;
+      --accent-yellow: #facc15;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 55%, #fff7ed 100%);
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+    /* Animasi Transisi Halus */
+    .fade-slide-in {
+      animation: fadeSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .float-anim {
+      animation: floatSlow 3.5s ease-in-out infinite;
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.6); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+    }
+    .speaking-pulse {
+      animation: pulseRing 1.5s infinite;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+    /* Print Styles */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; }
+      .print-area { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+    }
+
+    /* Drag and drop visual cues */
+    .draggable-item {
+      cursor: grab;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.2s ease;
+    }
+    .draggable-item:active { cursor: grabbing; }
+    .draggable-item.dragging {
+      opacity: 0.55;
+      transform: scale(0.98);
+      border-color: #f97316;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION & AUDIO BAR -->
+  <header id="topHeader" class="no-print sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-blue-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Brand / Identity -->
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigateTo('cover')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md">
+          PT
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-blue-900 text-sm sm:text-base tracking-tight">PROCEDURE TEXT</span>
+            <span class="hidden md:inline-block text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">XI SMA • Fase F</span>
+            <span id="headerStudentBadge" class="hidden sm:inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200"></span>
+          </div>
+          <p class="text-[11px] text-slate-500 hidden sm:block">SMA TQ Hidayatul Mubtadi-ien • 2026/2027</p>
+        </div>
+      </div>
+
+      <!-- Progress Bar Indicator -->
+      <div class="flex-1 max-w-xs mx-2 hidden lg:block">
+        <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+          <span>Learning Progress</span>
+          <span id="globalProgressText" class="text-blue-700 font-bold">0%</span>
+        </div>
+        <div class="w-full h-2.5 bg-blue-100 rounded-full overflow-hidden">
+          <div id="globalProgressBar" class="h-full bg-gradient-to-r from-blue-600 via-orange-500 to-yellow-400 transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Global Audio & Navigation Controls -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Speaking Status Indicator -->
+        <div id="speakingIndicator" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-orange-100 text-orange-800 text-xs font-bold border border-orange-300 speaking-pulse">
+          <span>🔊 Speaking...</span>
+          <button onclick="stopSpeech()" class="ml-1 px-1.5 py-0.5 bg-red-600 text-white rounded-md hover:bg-red-700 text-[10px]">STOP</button>
+        </div>
+
+        <button onclick="stopSpeech()" title="Stop Voice Narration" class="px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition flex items-center gap-1">
+          <span>⏹️</span><span class="hidden md:inline">Stop Voice</span>
+        </button>
+
+        <button id="bgmToggleBtn" onclick="toggleBGM()" title="Background Music" class="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition flex items-center gap-1">
+          <span id="bgmIcon">🎵</span><span class="hidden md:inline" id="bgmLabel">BGM: OFF</span>
+        </button>
+
+        <button id="soundToggleBtn" onclick="toggleSound()" title="Sound Effects & Voice" class="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold transition flex items-center gap-1">
+          <span id="soundIcon">🔊</span><span class="hidden sm:inline" id="soundLabel">SOUND ON</span>
+        </button>
+
+        <button onclick="navigateTo('menu')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-sm transition flex items-center gap-1">
+          <span>🧭</span><span>MAIN MENU</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECONDARY NAVIGATION BREADCRUMB BAR (Hidden on Cover) -->
+  <div id="subNavBar" class="no-print hidden bg-blue-900 text-white py-2 px-3 sm:px-6 shadow-inner">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button onclick="navigateTo('cover')" class="px-2.5 py-1 rounded-lg bg-blue-800 hover:bg-blue-700 text-xs font-semibold flex items-center gap-1 transition">
+          🏠 HOME
+        </button>
+        <button onclick="navigateBack()" class="px-2.5 py-1 rounded-lg bg-blue-800 hover:bg-blue-700 text-xs font-semibold flex items-center gap-1 transition">
+          ⬅️ BACK
+        </button>
+        <button onclick="navigateTo('menu')" class="px-2.5 py-1 rounded-lg bg-orange-500 hover:bg-orange-600 text-xs font-bold flex items-center gap-1 transition">
+          📋 MENU
+        </button>
+        <button onclick="navigateNext()" class="px-2.5 py-1 rounded-lg bg-blue-800 hover:bg-blue-700 text-xs font-semibold flex items-center gap-1 transition">
+          NEXT ➡️
+        </button>
+      </div>
+
+      <!-- Quick Menu Pills -->
+      <div class="flex items-center gap-1 overflow-x-auto max-w-full py-0.5 text-xs">
+        <button onclick="navigateTo('materi')" data-nav="materi" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">1. Materi</button>
+        <button onclick="navigateTo('simulasi')" data-nav="simulasi" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">2. Simulasi</button>
+        <button onclick="navigateTo('praktikum')" data-nav="praktikum" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">3. Praktikum</button>
+        <button onclick="navigateTo('game')" data-nav="game" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">4. Game</button>
+        <button onclick="navigateTo('lkpd')" data-nav="lkpd" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">5. LKPD</button>
+        <button onclick="navigateTo('evaluasi')" data-nav="evaluasi" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">6. Evaluasi</button>
+        <button onclick="navigateTo('pengembang')" data-nav="pengembang" class="nav-pill px-2.5 py-1 rounded-lg hover:bg-blue-700 whitespace-nowrap transition">7. Pengembang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main id="appContainer" class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6">
+    <!-- Dynamic Views Injected Here -->
+  </main>
+
+  <!-- MODAL FOR LEARNING OBJECTIVES, USER GUIDE, & ALERTS -->
+  <div id="customModal" class="no-print fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl border-2 border-blue-100 overflow-hidden fade-slide-in">
+      <div class="px-6 py-4 bg-gradient-to-r from-blue-700 to-blue-900 text-white flex items-center justify-between">
+        <h3 id="modalTitle" class="text-lg sm:text-xl font-extrabold flex items-center gap-2">Modal Title</h3>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold">✕</button>
+      </div>
+      <div id="modalBody" class="p-6 overflow-y-auto text-slate-700 space-y-3 text-sm sm:text-base leading-relaxed">
+        <!-- Dynamic modal content -->
+      </div>
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+        <button id="modalSpeakBtn" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5">
+          🔊 Dengarkan Penjelasan
+        </button>
+        <button onclick="closeModal()" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION (Replaces alert()) -->
+  <div id="toastBox" class="no-print fixed bottom-5 right-5 z-50 hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 flex items-center gap-3 fade-slide-in">
+    <span id="toastIcon" class="text-xl">✅</span>
+    <p id="toastMessage" class="text-xs sm:text-sm font-medium"></p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="no-print bg-white border-t border-blue-100 py-4 px-4 text-center text-xs text-slate-500 mt-auto">
+    <p class="font-semibold text-slate-700">Media Pembelajaran Interaktif (MPI) • Bahasa Inggris SMA Kelas XI Fase F</p>
+    <p>Dikembangkan oleh <span class="text-blue-700 font-bold">Ulfa Wahidah, S.Pd., M.Si.</span> • SMA TQ HIDAYATUL MUBTADI-IEN • Tahun Pelajaran 2026/2027</p>
+  </footer>
+
+  <script>
+    /* =========================================================================
+       1. STATE MANAGEMENT & LOCAL STORAGE
+       ========================================================================= */
+    const PAGE_ORDER = ['cover', 'menu', 'materi', 'simulasi', 'praktikum', 'game', 'lkpd', 'evaluasi', 'pengembang'];
+
+    const defaultState = {
+      currentPage: 'cover',
+      history: ['cover'],
+      studentProfile: {
+        name: '',
+        studentClass: 'XI'
+      },
+      soundEnabled: true,
+      bgmEnabled: false,
+      completedModules: {
+        materi_def: false,
+        materi_struct: false,
+        materi_lang: false,
+        materi_types: false,
+        materi_ex: false,
+        materi_vocab: false,
+        simulasi: false,
+        praktikum: false,
+        game1: false,
+        game2: false,
+        game3: false,
+        lkpd: false,
+        evaluasi: false
+      },
+      activeMateriTab: 'def',
+      activeGameTab: 'game1',
+      praktikumData: {
+        name: '',
+        studentClass: 'XI',
+        theme: 'How to Make Fried Rice',
+        goal: '',
+        materials: '',
+        steps: ''
+      },
+      lkpdData: {
+        name: '',
+        studentClass: 'XI',
+        group: '',
+        act1_goal: '',
+        act1_materials: '',
+        act1_steps: '',
+        act2_imp: '',
+        act2_act: '',
+        act2_conn: '',
+        act3: ['', '', '', '', ''],
+        act4_a: [2, 0, 3, 1],
+        act4_b: [1, 3, 0, 2],
+        act5: ''
+      },
+      evalState: {
+        studentName: '',
+        studentClass: 'XI',
+        started: false,
+        submitted: false,
+        currentQ: 0,
+        answers: Array(20).fill(null)
+      }
+    };
+
+    let appState = JSON.parse(JSON.stringify(defaultState));
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('mpi_procedure_text_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...defaultState,
+            ...parsed,
+            completedModules: { ...defaultState.completedModules, ...(parsed.completedModules || {}) },
+            praktikumData: { ...defaultState.praktikumData, ...(parsed.praktikumData || {}) },
+            lkpdData: { ...defaultState.lkpdData, ...(parsed.lkpdData || {}) },
+            evalState: { ...defaultState.evalState, ...(parsed.evalState || {}) }
+          };
+          appState.bgmEnabled = false; // Musik latar selalu mati secara default saat halaman dimuat
+        }
+      } catch (e) {
+        console.warn('LocalStorage unavailable:', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('mpi_procedure_text_v1', JSON.stringify(appState));
+      } catch (e) {
+        console.warn('Could not save state:', e);
+      }
+      updateGlobalProgress();
+    }
+
+    function markCompleted(key) {
+      if (!appState.completedModules[key]) {
+        appState.completedModules[key] = true;
+        saveState();
+      }
+    }
+
+    function updateGlobalProgress() {
+      const keys = Object.keys(appState.completedModules);
+      const done = keys.filter(k => appState.completedModules[k]).length;
+      const pct = Math.round((done / keys.length) * 100);
+      const bar = document.getElementById('globalProgressBar');
+      const txt = document.getElementById('globalProgressText');
+      if (bar) bar.style.width = pct + '%';
+      if (txt) txt.textContent = pct + '%';
+
+      const badge = document.getElementById('headerStudentBadge');
+      if (badge) {
+        if (appState.studentProfile && appState.studentProfile.name) {
+          badge.textContent = `👤 ${appState.studentProfile.name} (${appState.studentProfile.studentClass || 'XI'})`;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    /* =========================================================================
+       2. AUDIO SYSTEM: WEB SPEECH API & WEB AUDIO API SOUND EFFECTS / BGM
+       ========================================================================= */
+    let audioCtx = null;
+    let bgmInterval = null;
+    let lastSpokenText = '';
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSFX(type) {
+      if (!appState.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const now = ctx.currentTime;
+
+        if (type === 'correct') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } else if (type === 'fanfare') {
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, idx) => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'triangle';
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.frequency.setValueAtTime(freq, now + idx * 0.12);
+            g.gain.setValueAtTime(0.15, now + idx * 0.12);
+            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.35);
+            o.start(now + idx * 0.12);
+            o.stop(now + idx * 0.12 + 0.35);
+          });
+        }
+      } catch (e) {
+        console.warn('SFX error:', e);
+      }
+    }
+
+    function toggleSound() {
+      appState.soundEnabled = !appState.soundEnabled;
+      if (!appState.soundEnabled) {
+        stopSpeech();
+      } else {
+        playSFX('click');
+      }
+      updateAudioButtonsUI();
+      saveState();
+    }
+
+    function toggleBGM() {
+      appState.bgmEnabled = !appState.bgmEnabled;
+      if (appState.bgmEnabled) {
+        startBGM();
+        showToast('Musik latar edukatif diaktifkan.', '🎵');
+      } else {
+        stopBGM();
+        showToast('Musik latar dimatikan.', '🔇');
+      }
+      updateAudioButtonsUI();
+    }
+
+    function startBGM() {
+      stopBGM();
+      const melody = [261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 440.00, 392.00];
+      let step = 0;
+      bgmInterval = setInterval(() => {
+        if (!appState.bgmEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(melody[step % melody.length], ctx.currentTime);
+          gain.gain.setValueAtTime(0.025, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + 0.55);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.55);
+          step++;
+        } catch (e) {}
+      }, 650);
+    }
+
+    function stopBGM() {
+      if (bgmInterval) {
+        clearInterval(bgmInterval);
+        bgmInterval = null;
+      }
+    }
+
+    function updateAudioButtonsUI() {
+      const sIcon = document.getElementById('soundIcon');
+      const sLabel = document.getElementById('soundLabel');
+      const bIcon = document.getElementById('bgmIcon');
+      const bLabel = document.getElementById('bgmLabel');
+      if (sIcon) sIcon.textContent = appState.soundEnabled ? '🔊' : '🔇';
+      if (sLabel) sLabel.textContent = appState.soundEnabled ? 'SOUND ON' : 'SOUND OFF';
+      if (bIcon) bIcon.textContent = appState.bgmEnabled ? '🎶' : '🎵';
+      if (bLabel) bLabel.textContent = appState.bgmEnabled ? 'BGM: ON' : 'BGM: OFF';
+    }
+
+    function speakText(text, lang = 'en-US') {
+      if (!appState.soundEnabled) {
+        showToast('Aktifkan SOUND ON terlebih dahulu untuk mendengarkan narasi suara.', '🔇');
+        return;
+      }
+      if (!('speechSynthesis' in window)) {
+        showToast('Browser Anda tidak mendukung narasi suara otomatis. Silakan baca teks panduan yang tersedia.', 'ℹ️');
+        return;
+      }
+      // Jangan membacakan teks yang sama berulang kali jika sedang aktif berbicara teks tersebut
+      if (window.speechSynthesis.speaking && lastSpokenText === text) {
+        stopSpeech();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const cleanText = text.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+      lastSpokenText = text;
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = lang;
+      utterance.rate = lang.startsWith('en') ? 0.94 : 1.0;
+      utterance.pitch = 1.02;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        if (lang.startsWith('en')) {
+          const enVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
+          if (enVoice) utterance.voice = enVoice;
+        } else {
+          const idVoice = voices.find(v => v.lang.includes('id-ID'));
+          if (idVoice) utterance.voice = idVoice;
+        }
+      }
+
+      const indicator = document.getElementById('speakingIndicator');
+      utterance.onstart = () => {
+        if (indicator) {
+          indicator.classList.remove('hidden');
+          indicator.classList.add('flex');
+        }
+      };
+      utterance.onend = () => {
+        lastSpokenText = '';
+        if (indicator) {
+          indicator.classList.add('hidden');
+          indicator.classList.remove('flex');
+        }
+      };
+      utterance.onerror = () => {
+        lastSpokenText = '';
+        if (indicator) {
+          indicator.classList.add('hidden');
+          indicator.classList.remove('flex');
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeech() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      lastSpokenText = '';
+      const indicator = document.getElementById('speakingIndicator');
+      if (indicator) {
+        indicator.classList.add('hidden');
+        indicator.classList.remove('flex');
+      }
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    }
+
+    /* =========================================================================
+       3. UI HELPERS (MODAL & TOAST)
+       ========================================================================= */
+    function showToast(msg, icon = '✅') {
+      const box = document.getElementById('toastBox');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+      if (!box || !msgEl) return;
+      msgEl.textContent = msg;
+      iconEl.textContent = icon;
+      box.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        box.classList.add('hidden');
+      }, 3600);
+    }
+
+    function openModal(title, htmlContent, speakPlainText = '', speakLang = 'id-ID') {
+      const modal = document.getElementById('customModal');
+      document.getElementById('modalTitle').innerHTML = title;
+      document.getElementById('modalBody').innerHTML = htmlContent;
+      const speakBtn = document.getElementById('modalSpeakBtn');
+      if (speakPlainText) {
+        speakBtn.classList.remove('hidden');
+        speakBtn.onclick = () => speakText(speakPlainText, speakLang);
+      } else {
+        speakBtn.classList.add('hidden');
+      }
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      stopSpeech();
+      const modal = document.getElementById('customModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function showLearningObjectivesModal() {
+      playSFX('click');
+      const html = `
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-3">
+          <p class="font-bold text-blue-900">Capaian & Tujuan Pembelajaran (Kelas XI Fase F):</p>
+          <p class="text-xs text-blue-700 mt-0.5">Setelah menggunakan Media Pembelajaran Interaktif ini, peserta didik diharapkan mampu:</p>
+        </div>
+        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+          <li>Menjelaskan <strong>pengertian dan fungsi sosial</strong> Procedure Text.</li>
+          <li>Mengidentifikasi <strong>struktur teks (Generic Structure)</strong> prosedur.</li>
+          <li>Menganalisis <strong>unsur kebahasaan (Language Features)</strong> Procedure Text.</li>
+          <li>Mengidentifikasi penggunaan <em>imperative sentences, action verbs, adverbs, sequence connectors,</em> dan <em>simple present tense</em>.</li>
+          <li>Menganalisis informasi tersurat dan tersirat dalam berbagai contoh Procedure Text.</li>
+          <li>Menyusun langkah-langkah prosedur secara <strong>runtut dan logis</strong>.</li>
+          <li>Membuat Procedure Text secara mandiri dengan struktur dan unsur kebahasaan yang tepat.</li>
+          <li>Menyampaikan teks prosedur secara lisan dengan pelafalan yang dapat dipahami.</li>
+        </ol>
+      `;
+      const plain = "Tujuan Pembelajaran Procedure Text Kelas 11 Fase F: Pertama, menjelaskan pengertian dan fungsi sosial Procedure Text. Kedua, mengidentifikasi struktur teks prosedur. Ketiga, menganalisis unsur kebahasaan Procedure Text. Keempat, mengidentifikasi kalimat imperatif, kata kerja aksi, kata keterangan, kata penghubung urutan, dan simple present tense. Kelima, menganalisis informasi dalam berbagai contoh teks prosedur. Keenam, menyusun langkah prosedur secara runtut. Ketujuh, membuat teks prosedur secara mandiri. Kedelapan, menyampaikan teks prosedur secara lisan dengan pelafalan yang dapat dipahami.";
+      openModal('🎯 Learning Objectives (Tujuan Pembelajaran)', html, plain, 'id-ID');
+    }
+
+    function showUserGuideModal() {
+      playSFX('click');
+      const html = `
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-2xl bg-blue-50 border border-blue-200">
+            <h4 class="font-bold text-blue-900 mb-1">1. Navigasi Utama</h4>
+            <p class="text-xs text-slate-600">Gunakan tombol <strong>HOME, BACK, MAIN MENU,</strong> dan <strong>NEXT</strong> di bagian atas untuk berpindah antarhalaman dengan mudah.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-orange-50 border border-orange-200">
+            <h4 class="font-bold text-orange-900 mb-1">2. Fitur Audio & Suara</h4>
+            <p class="text-xs text-slate-600">Klik tombol <strong>🔊 Listen</strong> pada materi untuk mendengarkan pelafalan Bahasa Inggris & penjelasan Bahasa Indonesia.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
+            <h4 class="font-bold text-amber-900 mb-1">3. Urutan Belajar Ideal</h4>
+            <p class="text-xs text-slate-600">Pelajari <strong>Materi</strong> → Coba <strong>Simulasi</strong> → Kerjakan <strong>Praktikum</strong> → Bermain di <strong>Game</strong> → Isi <strong>LKPD</strong> → Ikuti <strong>Evaluasi</strong>.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+            <h4 class="font-bold text-emerald-900 mb-1">4. Penyimpanan Otomatis</h4>
+            <p class="text-xs text-slate-600">Progres belajar, hasil praktikum, dan LKPD tersimpan otomatis di perangkat Anda dan dapat dicetak (Print).</p>
+          </div>
+        </div>
+      `;
+      const plain = "Petunjuk Penggunaan Media Pembelajaran Interaktif Procedure Text. Pertama, gunakan tombol navigasi Home, Back, Main Menu, dan Next untuk berpindah halaman. Kedua, klik tombol ikon suara untuk mendengarkan pelafalan teks Bahasa Inggris maupun penjelasan Bahasa Indonesia. Ketiga, ikuti alur belajar mulai dari Materi, Simulasi, Praktikum, Game, LKPD, hingga Evaluasi 20 soal. Keempat, progres belajar Anda tersimpan secara otomatis.";
+      openModal('📖 User Guide (Petunjuk Penggunaan MPI)', html, plain, 'id-ID');
+    }
+
+    /* =========================================================================
+       4. NAVIGATION CONTROLLER
+       ========================================================================= */
+    function navigateTo(page, pushHistory = true) {
+      stopSpeech();
+      playSFX('click');
+      if (pushHistory && appState.currentPage !== page) {
+        appState.history.push(page);
+      }
+      appState.currentPage = page;
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function navigateBack() {
+      if (appState.history.length > 1) {
+        appState.history.pop();
+        const prev = appState.history[appState.history.length - 1];
+        navigateTo(prev, false);
+      } else {
+        navigateTo('cover', false);
+      }
+    }
+
+    function navigateNext() {
+      const idx = PAGE_ORDER.indexOf(appState.currentPage);
+      if (idx >= 0 && idx < PAGE_ORDER.length - 1) {
+        navigateTo(PAGE_ORDER[idx + 1]);
+      } else {
+        navigateTo('menu');
+      }
+    }
+
+    /* =========================================================================
+       5. CURRICULUM CONTENT DATA (MATERI, EXAMPLES, VOCABULARY, QUIZZES)
+       ========================================================================= */
+    const EXAMPLES_DATA = [
+      {
+        id: 'ex1',
+        title: 'HOW TO MAKE ORANGE JUICE',
+        badge: 'How to Make Something',
+        goal: 'To make a glass of fresh orange juice.',
+        materials: [
+          'Two oranges',
+          'A glass of water',
+          'Two teaspoons of sugar',
+          'Ice cubes'
+        ],
+        steps: [
+          'First, wash the oranges.',
+          'Second, cut the oranges into halves.',
+          'Next, squeeze the oranges.',
+          'Then, add water and sugar.',
+          'After that, stir the mixture well.',
+          'Finally, add ice cubes and serve.'
+        ],
+        translation: {
+          goal: 'Tujuan: Membuat segelas jus jeruk segar.',
+          materials: 'Bahan-bahan: Dua buah jeruk, segelas air, dua sendok teh gula, dan es batu.',
+          steps: [
+            'Pertama, cuci jeruk hingga bersih.',
+            'Kedua, potong jeruk menjadi dua bagian.',
+            'Berikutnya, peras jeruk tersebut.',
+            'Kemudian, tambahkan air dan gula.',
+            'Setelah itu, aduk campuran tersebut hingga merata.',
+            'Terakhir, tambahkan es batu dan sajikan.'
+          ]
+        },
+        languageAnalysis: [
+          { label: 'Imperative Verbs', items: 'wash, cut, squeeze, add, stir, serve' },
+          { label: 'Sequence Connectors', items: 'First, Second, Next, Then, After that, Finally' },
+          { label: 'Adverbs', items: 'well (adverb of manner), into halves' },
+          { label: 'Quantifiers / Nouns', items: 'Two oranges, A glass of water, Two teaspoons of sugar' }
+        ],
+        svgIllustration: `
+          <svg viewBox="0 0 240 160" class="w-full h-40 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 p-2">
+            <circle cx="65" cy="95" r="34" fill="#f97316" />
+            <circle cx="65" cy="95" r="27" fill="#fb923c" />
+            <path d="M65 68 L65 122 M38 95 L92 95 M46 76 L84 114 M84 76 L46 114" stroke="#fef08a" stroke-width="2.5"/>
+            <path d="M58 60 Q65 48 76 54 Q68 64 58 60Z" fill="#22c55e"/>
+            <rect x="125" y="42" width="56" height="86" rx="10" fill="#ffffff" fill-opacity="0.7" stroke="#38bdf8" stroke-width="3"/>
+            <rect x="129" y="65" width="48" height="59" rx="6" fill="#f59e0b"/>
+            <rect x="136" y="72" width="14" height="14" rx="3" fill="#e0f2fe" opacity="0.85"/>
+            <rect x="155" y="82" width="14" height="14" rx="3" fill="#e0f2fe" opacity="0.85"/>
+            <line x1="162" y1="22" x2="148" y2="95" stroke="#ef4444" stroke-width="5" stroke-linecap="round"/>
+          </svg>`
+      },
+      {
+        id: 'ex2',
+        title: 'HOW TO MAKE FRIED RICE',
+        badge: 'How to Make Something',
+        goal: 'To make a plate of delicious Indonesian fried rice.',
+        materials: [
+          '2 plates of cooked white rice',
+          '2 cloves of garlic (chopped)',
+          '1 egg',
+          '2 tablespoons of sweet soy sauce',
+          '1 tablespoon of cooking oil',
+          'A pinch of salt and pepper'
+        ],
+        steps: [
+          'First, heat the cooking oil in a frying pan over medium heat.',
+          'Second, sauté the chopped garlic until fragrant.',
+          'Next, crack the egg into the pan and scramble it quickly.',
+          'Then, put the cooked rice into the pan and stir well.',
+          'After that, add sweet soy sauce, salt, and pepper, then mix evenly.',
+          'Finally, turn off the stove and serve the fried rice warm.'
+        ],
+        translation: {
+          goal: 'Tujuan: Membuat sepiring nasi goreng Indonesia yang lezat.',
+          materials: 'Bahan-bahan: 2 piring nasi putih, 2 siung bawang putih cincang, 1 butir telur, 2 sdm kecap manis, 1 sdm minyak goreng, sejumput garam dan merica.',
+          steps: [
+            'Pertama, panaskan minyak goreng di wajan dengan api sedang.',
+            'Kedua, tumis bawang putih cincang hingga harum.',
+            'Berikutnya, pecahkan telur ke dalam wajan dan orak-arik dengan cepat.',
+            'Kemudian, masukkan nasi putih ke dalam wajan dan aduk rata.',
+            'Setelah itu, tambahkan kecap manis, garam, dan merica, lalu campur merata.',
+            'Terakhir, matikan kompor dan sajikan nasi goreng selagi hangat.'
+          ]
+        },
+        languageAnalysis: [
+          { label: 'Imperative Verbs', items: 'heat, sauté, crack, scramble, put, stir, add, mix, turn off, serve' },
+          { label: 'Sequence Connectors', items: 'First, Second, Next, Then, After that, Finally' },
+          { label: 'Adverbs of Manner', items: 'quickly, well, evenly' },
+          { label: 'Simple Present Tense', items: 'heat the cooking oil, add sweet soy sauce' }
+        ],
+        svgIllustration: `
+          <svg viewBox="0 0 240 160" class="w-full h-40 rounded-2xl bg-gradient-to-br from-orange-100 to-amber-200 p-2">
+            <ellipse cx="120" cy="112" rx="82" ry="24" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
+            <ellipse cx="120" cy="106" rx="64" ry="16" fill="#cbd5e1"/>
+            <path d="M68 104 Q120 52 172 104 Z" fill="#d97706"/>
+            <circle cx="102" cy="88" r="6" fill="#ef4444"/>
+            <circle cx="135" cy="85" r="6" fill="#22c55e"/>
+            <circle cx="118" cy="76" r="7" fill="#facc15"/>
+            <path d="M95 55 Q90 42 98 32" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M122 50 Q117 37 125 27" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M145 55 Q140 42 148 32" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>`
+      },
+      {
+        id: 'ex3',
+        title: 'HOW TO USE A BLENDER',
+        badge: 'How to Use Something',
+        goal: 'To operate an electric blender safely and properly.',
+        materials: [
+          'An electric blender',
+          'Ingredients to blend (fruits or vegetables)',
+          'Clean water or milk',
+          'A power outlet'
+        ],
+        steps: [
+          'First, make sure the blender switch is in the OFF position.',
+          'Second, plug the power cord into the electrical outlet.',
+          'Next, put the ingredients and some liquid into the blender jar.',
+          'Then, place the lid tightly on top of the jar.',
+          'After that, press the ON or speed button and blend until smooth.',
+          'Finally, turn off the blender, unplug the cord, and pour the mixture into a glass.'
+        ],
+        translation: {
+          goal: 'Tujuan: Mengoperasikan blender listrik dengan aman dan benar.',
+          materials: 'Alat & Bahan: Blender listrik, bahan yang akan diblender (buah/sayur), air bersih atau susu, stopkontak listrik.',
+          steps: [
+            'Pertama, pastikan sakelar blender berada pada posisi OFF (mati).',
+            'Kedua, colokkan kabel daya ke stopkontak listrik.',
+            'Berikutnya, masukkan bahan dan sedikit cairan ke dalam tabung blender.',
+            'Kemudian, pasang penutup dengan rapat di bagian atas tabung.',
+            'Setelah itu, tekan tombol ON atau kecepatan dan blender hingga halus.',
+            'Terakhir, matikan blender, cabut kabel, dan tuang campuran ke dalam gelas.'
+          ]
+        },
+        languageAnalysis: [
+          { label: 'Imperative Verbs', items: 'make sure, plug, put, place, press, blend, turn off, unplug, pour' },
+          { label: 'Sequence Connectors', items: 'First, Second, Next, Then, After that, Finally' },
+          { label: 'Adverbs', items: 'safely, properly, tightly, into the blender jar' },
+          { label: 'Technical Nouns', items: 'switch, power cord, electrical outlet, blender jar, lid' }
+        ],
+        svgIllustration: `
+          <svg viewBox="0 0 240 160" class="w-full h-40 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-200 p-2">
+            <rect x="88" y="106" width="64" height="36" rx="8" fill="#1d4ed8"/>
+            <circle cx="120" cy="124" r="9" fill="#facc15"/>
+            <polygon points="94,42 146,42 138,106 102,106" fill="#ffffff" fill-opacity="0.75" stroke="#3b82f6" stroke-width="3"/>
+            <polygon points="99,66 141,66 138,104 102,104" fill="#fb7185" opacity="0.8"/>
+            <rect x="90" y="32" width="60" height="10" rx="5" fill="#f97316"/>
+            <rect x="110" y="24" width="20" height="8" rx="3" fill="#ea580c"/>
+          </svg>`
+      }
+    ];
+
+    const VOCABULARY_BANK = [
+      { en: 'Goal / Aim', id: 'Tujuan', type: 'Noun' },
+      { en: 'Ingredients', id: 'Bahan-bahan (makanan/minuman)', type: 'Noun' },
+      { en: 'Tools / Utensils', id: 'Peralatan', type: 'Noun' },
+      { en: 'Steps / Methods', id: 'Langkah-langkah / Cara', type: 'Noun' },
+      { en: 'Stir', id: 'Mengaduk', type: 'Action Verb' },
+      { en: 'Pour', id: 'Menuangkan', type: 'Action Verb' },
+      { en: 'Slice', id: 'Mengiris tipis', type: 'Action Verb' },
+      { en: 'Chop', id: 'Mencincang / memotong kecil', type: 'Action Verb' },
+      { en: 'Boil', id: 'Merebus / mendidihkan', type: 'Action Verb' },
+      { en: 'Squeeze', id: 'Memeras', type: 'Action Verb' },
+      { en: 'Spread', id: 'Mengoleskan', type: 'Action Verb' },
+      { en: 'Peel', id: 'Mengupas kulit', type: 'Action Verb' },
+      { en: 'Plug in', id: 'Mencolokkan ke listrik', type: 'Phrasal Verb' },
+      { en: 'Turn on / Switch on', id: 'Menyalakan', type: 'Phrasal Verb' },
+      { en: 'Turn off / Unplug', id: 'Mematikan / mencabut kabel', type: 'Phrasal Verb' },
+      { en: 'Mix / Blend', id: 'Mencampur / menghaluskan', type: 'Action Verb' },
+      { en: 'Serve', id: 'Menyajikan', type: 'Action Verb' },
+      { en: 'First / Firstly', id: 'Pertama / pertama-tama', type: 'Connector' },
+      { en: 'Next / Then', id: 'Berikutnya / kemudian', type: 'Connector' },
+      { en: 'After that', id: 'Setelah itu', type: 'Connector' },
+      { en: 'Finally / Lastly', id: 'Terakhir / akhirnya', type: 'Connector' },
+      { en: 'Carefully / Gently', id: 'Dengan hati-hati / perlahan', type: 'Adverb' },
+      { en: 'Evenly / Thoroughly', id: 'Secara merata / menyeluruh', type: 'Adverb' },
+      { en: 'A pinch of', id: 'Sejumput', type: 'Quantifier' }
+    ];
+
+    const SUBMATERI_QUIZZES = {
+      def: {
+        q: 'What is the main social function of a Procedure Text?',
+        options: [
+          'To entertain readers with an imaginative story',
+          'To explain how to make or do something through sequential steps',
+          'To describe a specific tourist attraction in detail',
+          'To persuade people to buy a commercial product'
+        ],
+        ans: 1,
+        exp: 'Fungsi sosial Procedure Text adalah menjelaskan cara membuat atau melakukan sesuatu melalui langkah-langkah yang berurutan.'
+      },
+      struct: {
+        q: 'Which part of a Procedure Text contains the list of items, tools, or substances needed?',
+        options: ['Orientation', 'Resolution', 'Materials / Ingredients', 'Re-orientation'],
+        ans: 2,
+        exp: 'Materials atau Ingredients memuat daftar alat dan bahan yang dibutuhkan sebelum melakukan langkah-langkah.'
+      },
+      lang: {
+        q: 'Identify the imperative sentence below:',
+        options: [
+          'She is cutting the onions in the kitchen.',
+          'Cut the onions into thin slices!',
+          'The onions were cut by the chef yesterday.',
+          'We will cut the onions tomorrow.'
+        ],
+        ans: 1,
+        exp: 'Kalimat imperatif (perintah) diawali langsung dengan kata kerja dasar (Verb 1) seperti "Cut the onions...".'
+      },
+      types: {
+        q: '"How to Operate a Digital Camera" belongs to which type of Procedure Text?',
+        options: ['How to Make Something', 'How to Use / Operate Something', 'Narrative Recipe', 'Descriptive Manual'],
+        ans: 1,
+        exp: 'Teks tentang cara mengoperasikan perangkat termasuk jenis "How to Use Something".'
+      }
+    };
+
+    /* =========================================================================
+       6. VIEW RENDERERS
+       ========================================================================= */
+    function renderApp() {
+      const container = document.getElementById('appContainer');
+      const subNav = document.getElementById('subNavBar');
+      const page = appState.currentPage;
+
+      if (page === 'cover') {
+        subNav.classList.add('hidden');
+      } else {
+        subNav.classList.remove('hidden');
+      }
+
+      // Highlight active nav pill
+      document.querySelectorAll('.nav-pill').forEach(btn => {
+        if (btn.dataset.nav === page) {
+          btn.classList.add('bg-amber-400', 'text-blue-950', 'font-extrabold');
+        } else {
+          btn.classList.remove('bg-amber-400', 'text-blue-950', 'font-extrabold');
+        }
+      });
+
+      switch (page) {
+        case 'cover': container.innerHTML = renderCoverPage(); break;
+        case 'menu': container.innerHTML = renderMainMenuPage(); break;
+        case 'materi': container.innerHTML = renderMateriPage(); break;
+        case 'simulasi': container.innerHTML = renderSimulasiPage(); break;
+        case 'praktikum': container.innerHTML = renderPraktikumPage(); break;
+        case 'game': container.innerHTML = renderGamePage(); break;
+        case 'lkpd': container.innerHTML = renderLKPDPage(); break;
+        case 'evaluasi': container.innerHTML = renderEvaluasiPage(); break;
+        case 'pengembang': container.innerHTML = renderPengembangPage(); break;
+        default: container.innerHTML = renderCoverPage();
+      }
+      updateGlobalProgress();
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 0: COVER / HALAMAN PEMBUKA
+       ------------------------------------------------------------------------- */
+    function handleStartLearning() {
+      const nameInput = document.getElementById('coverStudentName');
+      const classInput = document.getElementById('coverStudentClass');
+      const nameVal = nameInput ? nameInput.value.trim() : '';
+      const classVal = classInput ? classInput.value.trim() : 'XI';
+
+      if (!nameVal) {
+        playSFX('wrong');
+        showToast('Silakan masukkan Nama Lengkap Anda terlebih dahulu sebelum memulai!', '✍️');
+        if (nameInput) nameInput.focus();
+        return;
+      }
+
+      appState.studentProfile = {
+        name: nameVal,
+        studentClass: classVal || 'XI'
+      };
+
+      // Sinkronkan identitas siswa ke form Praktikum, LKPD, dan Evaluasi jika masih kosong
+      if (!appState.praktikumData.name) appState.praktikumData.name = nameVal;
+      if (classVal) appState.praktikumData.studentClass = classVal;
+      if (!appState.lkpdData.name) appState.lkpdData.name = nameVal;
+      if (classVal) appState.lkpdData.studentClass = classVal;
+      if (!appState.evalState.studentName) appState.evalState.studentName = nameVal;
+      if (classVal) appState.evalState.studentClass = classVal;
+
+      saveState();
+      playSFX('correct');
+      showToast(`Selamat belajar, ${nameVal}!`, '🎉');
+      navigateTo('menu');
+    }
+
+    function renderCoverPage() {
+      const sp = appState.studentProfile || { name: '', studentClass: 'XI' };
+      return `
+        <section class="fade-slide-in py-4 sm:py-8">
+          <div class="bg-white rounded-[2rem] shadow-xl border-2 border-blue-100 overflow-hidden relative">
+            <!-- Decorative Gradient Top Banner -->
+            <div class="bg-gradient-to-r from-blue-800 via-blue-700 to-orange-500 px-6 py-3 text-white flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-semibold">
+              <span>🏫 SMA TQ HIDAYATUL MUBTADI-IEN</span>
+              <span>📚 Bahasa Inggris • Kelas XI • Fase F • TP 2026/2027</span>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 p-6 sm:p-10 items-center">
+              <!-- Left Content -->
+              <div class="lg:col-span-7 space-y-5">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 text-amber-900 font-bold text-xs sm:text-sm border border-amber-300">
+                  <span>✨ Interactive English Learning Media (MPI)</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-blue-950 leading-tight">
+                  PROCEDURE <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-orange-500 to-amber-500">TEXT</span>
+                </h1>
+
+                <p class="text-base sm:text-lg font-bold text-orange-600 italic">
+                  "Learn the Steps, Follow the Instructions, Create Something Amazing!"
+                </p>
+
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                  Selamat datang di media pembelajaran interaktif Bahasa Inggris Kelas XI Fase F. Masukkan nama dan kelas Anda di bawah ini untuk memulai pembelajaran.
+                </p>
+
+                <!-- Form Input Identitas Siswa Sebelum Memulai -->
+                <div class="bg-blue-50/80 border-2 border-blue-200 rounded-2xl p-4 sm:p-5 space-y-3">
+                  <div class="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-blue-900">
+                    <span>🧑‍🎓 Identitas Peserta Didik (Wajib Diisi Sebelum Mulai)</span>
+                  </div>
+                  <div class="grid sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                      <label for="coverStudentName" class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Siswa *</label>
+                      <input id="coverStudentName" type="text" value="${escapeHtml(sp.name)}" onkeydown="if(event.key==='Enter') handleStartLearning()" placeholder="Ketik nama lengkap Anda..." class="w-full px-4 py-2.5 rounded-xl bg-white border border-blue-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none text-sm font-semibold text-slate-800"/>
+                    </div>
+                    <div>
+                      <label for="coverStudentClass" class="block text-xs font-bold text-slate-700 mb-1">Kelas</label>
+                      <input id="coverStudentClass" type="text" value="${escapeHtml(sp.studentClass)}" onkeydown="if(event.key==='Enter') handleStartLearning()" placeholder="Contoh: XI-A" class="w-full px-4 py-2.5 rounded-xl bg-white border border-blue-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none text-sm font-semibold text-slate-800"/>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Primary Action Buttons -->
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                  <button onclick="handleStartLearning()" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-200 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <span>🚀</span><span>START LEARNING</span>
+                  </button>
+
+                  <button onclick="showLearningObjectivesModal()" class="px-5 py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm sm:text-base shadow-md transition flex items-center gap-2">
+                    <span>🎯</span><span>LEARNING OBJECTIVES</span>
+                  </button>
+
+                  <button onclick="showUserGuideModal()" class="px-5 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-500 text-blue-950 font-bold text-sm sm:text-base shadow-md transition flex items-center gap-2">
+                    <span>📖</span><span>USER GUIDE</span>
+                  </button>
+
+                  <button onclick="toggleSound()" class="px-4 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm border border-slate-300 transition flex items-center gap-2">
+                    <span>${appState.soundEnabled ? '🔊' : '🔇'}</span>
+                    <span>${appState.soundEnabled ? 'SOUND ON' : 'SOUND OFF'}</span>
+                  </button>
+                </div>
+
+                <!-- Developer Quick Badge -->
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                  <span>👩‍🏫 Guru Mapel & Pengembang: <strong class="text-blue-900">Ulfa Wahidah, S.Pd., M.Si.</strong></span>
+                  <button onclick="speakText('Welcome to Interactive English Learning Media on Procedure Text for Grade 11. Learn the Steps, Follow the Instructions, Create Something Amazing!', 'en-US')" class="text-blue-700 hover:underline font-bold flex items-center gap-1">
+                    🔊 Listen Welcome Greeting
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right 3D Cartoon Educational SVG Illustration -->
+              <div class="lg:col-span-5 flex justify-center">
+                <div class="w-full max-w-md bg-gradient-to-br from-blue-50 via-amber-50 to-orange-100 rounded-3xl p-4 border-2 border-blue-200 shadow-inner float-anim">
+                  <svg viewBox="0 0 420 340" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="bgCard" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#dbeafe"/>
+                        <stop offset="100%" stop-color="#ffedd5"/>
+                      </linearGradient>
+                      <linearGradient id="shirtBlue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#2563eb"/>
+                        <stop offset="100%" stop-color="#1e3a8a"/>
+                      </linearGradient>
+                    </defs>
+                    <rect x="10" y="10" width="400" height="320" rx="28" fill="url(#bgCard)"/>
+                    <!-- Floating Book Icon -->
+                    <g transform="translate(32, 34)">
+                      <rect x="0" y="0" width="88" height="62" rx="12" fill="#ffffff" stroke="#3b82f6" stroke-width="3"/>
+                      <rect x="8" y="8" width="32" height="46" rx="4" fill="#93c5fd"/>
+                      <rect x="46" y="8" width="32" height="46" rx="4" fill="#fde047"/>
+                      <text x="14" y="36" font-size="11" font-weight="bold" fill="#1e3a8a">ENG</text>
+                      <text x="52" y="36" font-size="11" font-weight="bold" fill="#9a3412">XI</text>
+                    </g>
+                    <!-- Cooking Activity Card (Top Right) -->
+                    <g transform="translate(285, 30)">
+                      <rect x="0" y="0" width="102" height="72" rx="16" fill="#ffffff" stroke="#f97316" stroke-width="3"/>
+                      <ellipse cx="51" cy="48" rx="34" ry="12" fill="#334155"/>
+                      <rect x="78" y="45" width="18" height="6" rx="3" fill="#f97316"/>
+                      <circle cx="45" cy="44" r="10" fill="#fef08a"/>
+                      <circle cx="45" cy="44" r="5" fill="#f59e0b"/>
+                      <text x="16" y="22" font-size="10" font-weight="bold" fill="#ea580c">STEP 1-2-3</text>
+                    </g>
+                    <!-- High School Student 3D Cartoon Character -->
+                    <g transform="translate(135, 65)">
+                      <!-- Body -->
+                      <path d="M25 165 C25 120, 125 120, 125 165 L132 225 L18 225 Z" fill="url(#shirtBlue)"/>
+                      <!-- Tie / Collar -->
+                      <polygon points="62,124 88,124 75,145" fill="#ffffff"/>
+                      <polygon points="71,134 79,134 81,175 75,184 69,175" fill="#f97316"/>
+                      <!-- Head -->
+                      <circle cx="75" cy="78" r="42" fill="#fed7aa"/>
+                      <!-- Hair -->
+                      <path d="M33 74 C33 32, 117 32, 117 74 C112 52, 85 45, 75 50 C60 44, 38 54, 33 74 Z" fill="#1e293b"/>
+                      <!-- Eyes & Smile -->
+                      <circle cx="60" cy="78" r="4.5" fill="#0f172a"/>
+                      <circle cx="90" cy="78" r="4.5" fill="#0f172a"/>
+                      <circle cx="61.5" cy="76.5" r="1.5" fill="#ffffff"/>
+                      <circle cx="91.5" cy="76.5" r="1.5" fill="#ffffff"/>
+                      <path d="M63 94 Q75 106 87 94" stroke="#9a3412" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <!-- Laptop on Desk -->
+                    <g transform="translate(115, 222)">
+                      <rect x="25" y="0" width="140" height="76" rx="10" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/>
+                      <circle cx="95" cy="38" r="14" fill="#facc15"/>
+                      <text x="87" y="42" font-size="11" font-weight="bold" fill="#1e3a8a">MPI</text>
+                      <rect x="5" y="74" width="180" height="12" rx="6" fill="#94a3b8"/>
+                    </g>
+                    <!-- Stationery Cup (Bottom Left) -->
+                    <g transform="translate(36, 228)">
+                      <rect x="12" y="0" width="8" height="36" rx="3" fill="#f97316" transform="rotate(-12 12 0)"/>
+                      <rect x="28" y="0" width="8" height="36" rx="3" fill="#2563eb" transform="rotate(10 28 0)"/>
+                      <rect x="8" y="26" width="36" height="44" rx="8" fill="#facc15" stroke="#ca8a04" stroke-width="2.5"/>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 1: MAIN MENU (7 MENU UTAMA)
+       ------------------------------------------------------------------------- */
+    function renderMainMenuPage() {
+      const menus = [
+        {
+          id: 'materi',
+          num: '01',
+          title: 'MATERI',
+          subtitle: 'Learning Material',
+          desc: 'Definition, Social Function, Generic Structure, Language Features, Types, Examples & Vocabulary Bank.',
+          icon: '📚',
+          color: 'from-blue-600 to-blue-800',
+          badgeColor: 'bg-blue-100 text-blue-800',
+          done: appState.completedModules.materi_def && appState.completedModules.materi_struct && appState.completedModules.materi_lang
+        },
+        {
+          id: 'simulasi',
+          num: '02',
+          title: 'SIMULASI',
+          subtitle: "Let's Make a Sandwich!",
+          desc: 'Susun langkah-langkah membuat sandwich secara interaktif dengan drag & drop dan umpan balik otomatis.',
+          icon: '🥪',
+          color: 'from-orange-500 to-amber-600',
+          badgeColor: 'bg-orange-100 text-orange-800',
+          done: appState.completedModules.simulasi
+        },
+        {
+          id: 'praktikum',
+          num: '03',
+          title: 'PRAKTIKUM',
+          subtitle: 'Create Your Procedure Text',
+          desc: 'Proyek menulis teks prosedur mandiri berdasarkan tema pilihan lengkap dengan rubrik penilaian 100 poin.',
+          icon: '✍️',
+          color: 'from-emerald-600 to-teal-700',
+          badgeColor: 'bg-emerald-100 text-emerald-800',
+          done: appState.completedModules.praktikum
+        },
+        {
+          id: 'game',
+          num: '04',
+          title: 'GAME',
+          subtitle: 'English Fun Zone (3 Games)',
+          desc: 'Word Hunter, Arrange the Steps, dan Guess the Procedure dengan skor otomatis & penghargaan bintang.',
+          icon: '🎮',
+          color: 'from-purple-600 to-indigo-700',
+          badgeColor: 'bg-purple-100 text-purple-800',
+          done: appState.completedModules.game1 && appState.completedModules.game2 && appState.completedModules.game3
+        },
+        {
+          id: 'lkpd',
+          num: '05',
+          title: 'LKPD',
+          subtitle: 'Lembar Kerja Peserta Didik',
+          desc: '5 aktivitas terstruktur: Identifikasi struktur, unsur kebahasaan, teks rumpang, urutan langkah & kreasi.',
+          icon: '📝',
+          color: 'from-amber-500 to-yellow-600',
+          badgeColor: 'bg-amber-100 text-amber-900',
+          done: appState.completedModules.lkpd
+        },
+        {
+          id: 'evaluasi',
+          num: '06',
+          title: 'EVALUASI',
+          subtitle: 'Final Assessment (20 Soal)',
+          desc: '15 Pilihan Ganda, 3 True/False, dan 2 Arrange Steps dengan penilaian otomatis & pembahasan lengkap.',
+          icon: '🏆',
+          color: 'from-rose-600 to-red-700',
+          badgeColor: 'bg-rose-100 text-rose-800',
+          done: appState.completedModules.evaluasi
+        },
+        {
+          id: 'pengembang',
+          num: '07',
+          title: 'PENGEMBANG',
+          subtitle: 'Developer Profile',
+          desc: 'Profil pengembang media pembelajaran interaktif, satuan pendidikan, dan informasi kurikulum.',
+          icon: '👩‍🏫',
+          color: 'from-cyan-600 to-blue-700',
+          badgeColor: 'bg-cyan-100 text-cyan-800',
+          done: true
+        }
+      ];
+
+      return `
+        <section class="fade-slide-in space-y-6">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-blue-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-extrabold uppercase tracking-wider text-orange-600">Main Dashboard • Kelas XI Fase F</span>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-950 mt-1">
+                ${appState.studentProfile?.name ? `Selamat Belajar, ${escapeHtml(appState.studentProfile.name)}! 👋` : 'Pilih Menu Pembelajaran Interaktif'}
+              </h2>
+              <p class="text-slate-600 text-sm mt-1">Klik salah satu kartu menu di bawah ini untuk memulai eksplorasi materi dan aktivitas.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="showLearningObjectivesModal()" class="px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-xs sm:text-sm border border-blue-200 transition">
+                🎯 Tujuan Pembelajaran
+              </button>
+              <button onclick="showUserGuideModal()" class="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs sm:text-sm border border-amber-200 transition">
+                📖 Petunjuk MPI
+              </button>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            ${menus.map(m => `
+              <div onclick="navigateTo('${m.id}')" class="group cursor-pointer bg-white rounded-3xl p-5 shadow-md hover:shadow-xl border-2 border-slate-100 hover:border-blue-400 transition-all duration-300 flex flex-col justify-between transform hover:-translate-y-1">
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-3xl shadow-md group-hover:scale-105 transition">
+                      ${m.icon}
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full ${m.badgeColor}">MENU ${m.num}</span>
+                      ${m.done ? '<div class="text-[11px] font-bold text-emerald-600 mt-1">✅ Selesai</div>' : '<div class="text-[11px] font-semibold text-slate-400 mt-1">⏳ Belum Selesai</div>'}
+                    </div>
+                  </div>
+                  <h3 class="text-xl font-extrabold text-blue-950 group-hover:text-blue-700 transition">${m.title}</h3>
+                  <p class="text-xs font-bold text-orange-600 mb-2">${m.subtitle}</p>
+                  <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">${m.desc}</p>
+                </div>
+                <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-extrabold text-blue-700 group-hover:text-orange-600">
+                  <span>Buka Menu ${m.title}</span>
+                  <span class="text-base group-hover:translate-x-1 transition">→</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 2: MENU 1 – LEARNING MATERIAL
+       ------------------------------------------------------------------------- */
+    function setMateriTab(tab) {
+      playSFX('click');
+      stopSpeech();
+      appState.activeMateriTab = tab;
+      markCompleted('materi_' + tab);
+      renderApp();
+    }
+
+    function renderMateriPage() {
+      const tab = appState.activeMateriTab || 'def';
+      markCompleted('materi_' + tab);
+
+      const tabs = [
+        { id: 'def', label: '1. Definition & Function', done: appState.completedModules.materi_def },
+        { id: 'struct', label: '2. Generic Structure', done: appState.completedModules.materi_struct },
+        { id: 'lang', label: '3. Language Features', done: appState.completedModules.materi_lang },
+        { id: 'types', label: '4. Types of Text', done: appState.completedModules.materi_types },
+        { id: 'ex', label: '5. Examples (3 Texts)', done: appState.completedModules.materi_ex },
+        { id: 'vocab', label: '6. Vocabulary Bank (24)', done: appState.completedModules.materi_vocab }
+      ];
+
+      let contentHtml = '';
+
+      if (tab === 'def') {
+        contentHtml = `
+          <div class="space-y-6 fade-slide-in">
+            <div class="grid md:grid-cols-2 gap-6">
+              <!-- Definition Card -->
+              <div class="bg-blue-50/70 rounded-3xl p-6 border border-blue-200 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold">DEFINITION</span>
+                  <div class="flex gap-1.5">
+                    <button onclick="speakText('Procedure text is a type of text that provides instructions or directions on how to make, use, or do something through a sequence of logical steps.', 'en-US')" class="px-3 py-1 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold">🔊 English</button>
+                    <button onclick="speakText('Procedure text adalah jenis teks yang memberikan petunjuk atau instruksi tentang cara membuat, menggunakan, atau melakukan sesuatu melalui urutan langkah-langkah yang logis.', 'id-ID')" class="px-3 py-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold">🔊 Indonesia</button>
+                  </div>
+                </div>
+                <h3 class="text-xl font-extrabold text-blue-950">What is Procedure Text?</h3>
+                <p class="text-sm sm:text-base text-slate-800 font-medium bg-white p-4 rounded-2xl border border-blue-100">
+                  <strong>English:</strong> "Procedure text is a type of text that provides instructions or directions on how to make, use, or do something through a sequence of logical steps."
+                </p>
+                <p class="text-sm sm:text-base text-slate-700 bg-white p-4 rounded-2xl border border-blue-100">
+                  <strong>Bahasa Indonesia:</strong> "Procedure text adalah jenis teks yang memberikan petunjuk atau instruksi tentang cara membuat, menggunakan, atau melakukan sesuatu melalui urutan langkah-langkah yang logis dan sistematis."
+                </p>
+              </div>
+
+              <!-- Social Function Card -->
+              <div class="bg-orange-50/70 rounded-3xl p-6 border border-orange-200 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full bg-orange-600 text-white text-xs font-bold">SOCIAL FUNCTION</span>
+                  <div class="flex gap-1.5">
+                    <button onclick="speakText('The social function of procedure text is to inform or instruct the readers or listeners on how to accomplish a task completely and safely through sequential steps.', 'en-US')" class="px-3 py-1 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold">🔊 English</button>
+                    <button onclick="speakText('Tujuan sosial teks prosedur adalah memberikan petunjuk atau instruksi kepada pembaca agar dapat melakukan sesuatu atau membuat sesuatu secara berurutan, tepat, dan aman.', 'id-ID')" class="px-3 py-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold">🔊 Indonesia</button>
+                  </div>
+                </div>
+                <h3 class="text-xl font-extrabold text-orange-950">Social Function (Tujuan Sosial)</h3>
+                <p class="text-sm sm:text-base text-slate-800 font-medium bg-white p-4 rounded-2xl border border-orange-100">
+                  <strong>English:</strong> "To inform or instruct the readers/listeners on how to make or do something completely and safely through a series of ordered steps."
+                </p>
+                <p class="text-sm sm:text-base text-slate-700 bg-white p-4 rounded-2xl border border-orange-100">
+                  <strong>Bahasa Indonesia:</strong> "Memberikan petunjuk atau instruksi untuk melakukan sesuatu atau membuat sesuatu secara berurutan sehingga hasil yang diinginkan tercapai dengan benar."
+                </p>
+              </div>
+            </div>
+            ${renderSubmateriQuiz('def')}
+          </div>
+        `;
+      } else if (tab === 'struct') {
+        contentHtml = `
+          <div class="space-y-6 fade-slide-in">
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-blue-50 p-4 rounded-2xl border border-blue-200">
+              <div>
+                <h3 class="text-lg font-extrabold text-blue-950">Generic Structure of Procedure Text</h3>
+                <p class="text-xs sm:text-sm text-slate-600">Teks prosedur memiliki tiga bagian struktur utama yang tersusun secara sistematis.</p>
+              </div>
+              <button onclick="speakText('Generic structure of procedure text consists of three parts: First, Goal or Aim. Second, Materials, Ingredients, or Tools. Third, Steps or Methods.', 'en-US')" class="px-4 py-2 rounded-xl bg-blue-700 text-white text-xs font-bold">🔊 Listen Summary</button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-5">
+              <!-- 1. Goal -->
+              <div class="bg-white rounded-3xl p-5 border-2 border-blue-200 shadow-sm space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl font-extrabold">1</div>
+                <h4 class="text-lg font-extrabold text-blue-900">Goal / Aim (Tujuan)</h4>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Menjelaskan tujuan atau hasil akhir yang ingin dicapai dari teks prosedur. Biasanya tercantum pada judul teks atau kalimat pembuka.
+                </p>
+                <div class="p-3 rounded-2xl bg-blue-50 border border-blue-100 text-xs">
+                  <strong class="text-blue-900">Contoh:</strong><br/>
+                  <em>"How to Make a Cup of Hot Tea"</em><br/>
+                  <em>"To make a glass of fresh orange juice."</em>
+                </div>
+              </div>
+
+              <!-- 2. Materials -->
+              <div class="bg-white rounded-3xl p-5 border-2 border-orange-200 shadow-sm space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-2xl font-extrabold">2</div>
+                <h4 class="text-lg font-extrabold text-orange-900">Materials / Ingredients / Tools</h4>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Memuat daftar bahan (<em>ingredients</em> untuk makanan/minuman) dan peralatan (<em>tools/utensils</em>) yang diperlukan. (Bersifat opsional pada beberapa instruksi non-benda).
+                </p>
+                <div class="p-3 rounded-2xl bg-orange-50 border border-orange-100 text-xs">
+                  <strong class="text-orange-900">Contoh:</strong><br/>
+                  <em>"A tea bag, hot water, 2 teaspoons of sugar, a cup, and a spoon."</em>
+                </div>
+              </div>
+
+              <!-- 3. Steps -->
+              <div class="bg-white rounded-3xl p-5 border-2 border-amber-300 shadow-sm space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500 text-blue-950 flex items-center justify-center text-2xl font-extrabold">3</div>
+                <h4 class="text-lg font-extrabold text-amber-900">Steps / Methods (Langkah-langkah)</h4>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Berisi urutan langkah-langkah atau instruksi kronologis yang harus dilakukan dari awal hingga selesai untuk mencapai <em>Goal</em>.
+                </p>
+                <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs">
+                  <strong class="text-amber-900">Contoh:</strong><br/>
+                  <em>"First, boil the water. Second, put the tea bag into the cup. Finally, stir well and serve."</em>
+                </div>
+              </div>
+            </div>
+            ${renderSubmateriQuiz('struct')}
+          </div>
+        `;
+      } else if (tab === 'lang') {
+        const features = [
+          {
+            title: '1. Imperative Sentences (Kalimat Perintah)',
+            desc: 'Kalimat yang digunakan untuk memberikan perintah atau instruksi langsung. Diawali kata kerja dasar (Verb 1) tanpa subjek.',
+            example: '"Wash the oranges." / "Plug in the power cord." / "Do not touch the hot pan."',
+            voice: 'Imperative sentences start with base verbs to give direct instructions, for example: Wash the oranges, or Plug in the power cord.'
+          },
+          {
+            title: '2. Action Verbs (Kata Kerja Aksi)',
+            desc: 'Kata kerja yang menunjukkan tindakan fisik yang dapat diamati saat melakukan prosedur.',
+            example: 'cut, slice, stir, pour, mix, boil, press, turn on, squeeze, serve.',
+            voice: 'Action verbs show physical actions, such as cut, slice, stir, pour, mix, boil, press, and serve.'
+          },
+          {
+            title: '3. Simple Present Tense',
+            desc: 'Menggunakan bentuk waktu Simple Present (Verb 1) karena instruksi merupakan fakta prosedur umum yang berlaku kapan saja.',
+            example: '"Add two teaspoons of sugar." / "Heat the oil in a frying pan."',
+            voice: 'Procedure text uses Simple Present Tense because instructions represent general procedures.'
+          },
+          {
+            title: '4. Sequence Connectors (Kata Penghubung Urutan)',
+            desc: 'Kata hubung yang menunjukkan urutan waktu atau tahapan langkah agar sistematis dan runtut.',
+            example: 'First, Second, Third, Next, Then, After that, Meanwhile, Finally, Lastly.',
+            voice: 'Sequence connectors show chronological order, such as First, Second, Next, Then, After that, and Finally.'
+          },
+          {
+            title: '5. Adverbs & Adverbs of Manner (Kata Keterangan)',
+            desc: 'Memberikan keterangan cara melakukan tindakan (adverb of manner), waktu, atau takaran.',
+            example: '"Stir the mixture well." / "Slice the onions thinly." / "Boil for 5 minutes."',
+            voice: 'Adverbs and adverbs of manner explain how an action is done, for example: Stir well, or Slice thinly.'
+          }
+        ];
+
+        contentHtml = `
+          <div class="space-y-5 fade-slide-in">
+            <div class="bg-gradient-to-r from-blue-700 to-blue-900 text-white p-5 rounded-3xl">
+              <h3 class="text-xl font-extrabold">Language Features (Unsur Kebahasaan Procedure Text)</h3>
+              <p class="text-xs sm:text-sm text-blue-100 mt-1">Pelajari ciri-ciri kebahasaan utama yang wajib digunakan saat menganalisis maupun menulis Procedure Text.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+              ${features.map(f => `
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-orange-300 transition space-y-2.5">
+                  <div class="flex items-start justify-between gap-2">
+                    <h4 class="font-extrabold text-blue-950 text-base">${f.title}</h4>
+                    <button onclick="speakText('${f.voice}', 'en-US')" class="shrink-0 px-2.5 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-bold">🔊 Listen</button>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-600">${f.desc}</p>
+                  <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-950">
+                    📌 Example: ${f.example}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            ${renderSubmateriQuiz('lang')}
+          </div>
+        `;
+      } else if (tab === 'types') {
+        contentHtml = `
+          <div class="space-y-6 fade-slide-in">
+            <h3 class="text-xl font-extrabold text-blue-950">Types of Procedure Text (Jenis-Jenis Teks Prosedur)</h3>
+            <div class="grid md:grid-cols-3 gap-5">
+              <div class="bg-white rounded-3xl p-6 border-2 border-orange-200 shadow-sm space-y-3">
+                <div class="text-4xl">🍳</div>
+                <h4 class="text-lg font-extrabold text-orange-700">1. How to Make Something</h4>
+                <p class="text-xs sm:text-sm text-slate-600">Teks prosedur yang menjelaskan cara membuat makanan, minuman, atau kerajinan tangan (resep & DIY).</p>
+                <div class="p-3 rounded-2xl bg-orange-50 text-xs space-y-1">
+                  <p class="font-bold text-orange-900">Contoh Judul:</p>
+                  <ul class="list-disc pl-4 text-slate-700">
+                    <li>How to Make Orange Juice</li>
+                    <li>How to Make Indonesian Fried Rice</li>
+                    <li>How to Make Origami Crane</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-3xl p-6 border-2 border-blue-200 shadow-sm space-y-3">
+                <div class="text-4xl">🔌</div>
+                <h4 class="text-lg font-extrabold text-blue-700">2. How to Use Something</h4>
+                <p class="text-xs sm:text-sm text-slate-600">Teks prosedur yang menjelaskan cara mengoperasikan atau menggunakan alat elektronik, mesin, atau perangkat lunak (manual book).</p>
+                <div class="p-3 rounded-2xl bg-blue-50 text-xs space-y-1">
+                  <p class="font-bold text-blue-900">Contoh Judul:</p>
+                  <ul class="list-disc pl-4 text-slate-700">
+                    <li>How to Use a Blender</li>
+                    <li>How to Operate a Washing Machine</li>
+                    <li>How to Use a Digital Microscope</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-3xl p-6 border-2 border-emerald-200 shadow-sm space-y-3">
+                <div class="text-4xl">🧭</div>
+                <h4 class="text-lg font-extrabold text-emerald-700">3. How to Do Something</h4>
+                <p class="text-xs sm:text-sm text-slate-600">Teks prosedur yang memberikan panduan melakukan suatu aktivitas, kebiasaan, atau kiat tertentu secara runtut.</p>
+                <div class="p-3 rounded-2xl bg-emerald-50 text-xs space-y-1">
+                  <p class="font-bold text-emerald-900">Contoh Judul:</p>
+                  <ul class="list-disc pl-4 text-slate-700">
+                    <li>How to Wash Hands Properly</li>
+                    <li>How to Save Battery on Smartphone</li>
+                    <li>How to Study Effectively for Exams</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            ${renderSubmateriQuiz('types')}
+          </div>
+        `;
+      } else if (tab === 'ex') {
+        contentHtml = `
+          <div class="space-y-6 fade-slide-in">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-xl font-extrabold text-blue-950">Examples of Procedure Text (Analisis Struktur & Kebahasaan)</h3>
+                <p class="text-xs sm:text-sm text-slate-600">Klik tombol audio untuk mendengarkan pelafalan Bahasa Inggris atau tombol Terjemahan untuk melihat arti Bahasa Indonesia.</p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              ${EXAMPLES_DATA.map((ex, idx) => {
+                const fullEnglishText = `${ex.title}. Goal: ${ex.goal}. Materials: ${ex.materials.join(', ')}. Steps: ${ex.steps.join(' ')}`;
+                return `
+                  <div class="bg-white rounded-3xl border-2 border-blue-100 shadow-md overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-600 px-6 py-4 text-white flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-400 text-blue-950">${ex.badge}</span>
+                        <h4 class="text-lg sm:text-xl font-extrabold mt-1">Example ${idx + 1}: ${ex.title}</h4>
+                      </div>
+                      <div class="flex flex-wrap gap-2">
+                        <button onclick="speakText(\`${fullEnglishText.replace(/"/g, '')}\`, 'en-US')" class="px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-extrabold shadow flex items-center gap-1.5">
+                          🔊 Listen English Audio
+                        </button>
+                        <button onclick="toggleExampleTranslation('${ex.id}')" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/30">
+                          🌐 Terjemahan ID
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="p-6 grid lg:grid-cols-12 gap-6">
+                      <!-- Left: Illustration & Structure -->
+                      <div class="lg:col-span-5 space-y-4">
+                        ${ex.svgIllustration}
+                        <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-1">
+                          <span class="text-[11px] font-extrabold uppercase text-blue-700">Generic Structure 1: GOAL</span>
+                          <p class="text-sm font-bold text-blue-950">${ex.goal}</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-orange-50 border border-orange-200 space-y-1.5">
+                          <span class="text-[11px] font-extrabold uppercase text-orange-700">Generic Structure 2: MATERIALS / INGREDIENTS</span>
+                          <ul class="list-disc pl-5 text-xs sm:text-sm text-slate-700 space-y-1">
+                            ${ex.materials.map(m => `<li>${m}</li>`).join('')}
+                          </ul>
+                        </div>
+                      </div>
+
+                      <!-- Right: Steps, Language Analysis & Translation -->
+                      <div class="lg:col-span-7 space-y-4">
+                        <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
+                          <span class="text-[11px] font-extrabold uppercase text-amber-800">Generic Structure 3: STEPS / METHODS</span>
+                          <ol class="list-decimal pl-5 text-xs sm:text-sm text-slate-800 space-y-1.5 font-medium">
+                            ${ex.steps.map(s => `<li>${s}</li>`).join('')}
+                          </ol>
+                        </div>
+
+                        <!-- Language Features Identification -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                          <span class="text-[11px] font-extrabold uppercase text-slate-700">🔍 Identification of Language Features</span>
+                          <div class="grid sm:grid-cols-2 gap-2 text-xs">
+                            ${ex.languageAnalysis.map(la => `
+                              <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-blue-800">${la.label}:</strong>
+                                <p class="text-slate-600 mt-0.5">${la.items}</p>
+                              </div>
+                            `).join('')}
+                          </div>
+                        </div>
+
+                        <!-- Hidden Translation Box -->
+                        <div id="trans_${ex.id}" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs sm:text-sm text-emerald-950 space-y-2">
+                          <div class="flex items-center justify-between">
+                            <strong class="text-emerald-800">🇮🇩 Terjemahan Bahasa Indonesia:</strong>
+                            <button onclick="speakText('${ex.translation.goal}. ${ex.translation.materials}. ${ex.translation.steps.join(' ')}', 'id-ID')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">🔊 Dengarkan</button>
+                          </div>
+                          <p>${ex.translation.goal}</p>
+                          <p>${ex.translation.materials}</p>
+                          <ol class="list-decimal pl-5 space-y-1">
+                            ${ex.translation.steps.map(ts => `<li>${ts}</li>`).join('')}
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      } else if (tab === 'vocab') {
+        contentHtml = `
+          <div class="space-y-5 fade-slide-in">
+            <div class="bg-gradient-to-r from-amber-400 to-orange-500 text-blue-950 p-5 rounded-3xl flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-xl font-extrabold">Vocabulary Bank (24 Kosakata Penting Procedure Text)</h3>
+                <p class="text-xs sm:text-sm font-semibold">Klik ikon 🔊 pada setiap kartu kata untuk mendengarkan pelafalan Bahasa Inggris yang tepat.</p>
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+              ${VOCABULARY_BANK.map(v => `
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 hover:border-blue-400 shadow-sm flex items-center justify-between gap-2 transition">
+                  <div>
+                    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">${v.type}</span>
+                    <h4 class="font-extrabold text-blue-950 text-sm sm:text-base mt-1">${v.en}</h4>
+                    <p class="text-xs text-slate-600">${v.id}</p>
+                  </div>
+                  <button onclick="speakText('${v.en.replace(/\//g, ' or ')}', 'en-US')" title="Pronounce" class="w-10 h-10 shrink-0 rounded-xl bg-orange-100 hover:bg-orange-500 text-orange-700 hover:text-white flex items-center justify-center font-bold transition">
+                    🔊
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <section class="fade-slide-in space-y-5">
+          <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-md border border-blue-100 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="text-xs font-extrabold text-orange-600 uppercase">Menu 1 • Learning Material</span>
+              <h2 class="text-2xl font-extrabold text-blue-950">Materi Pembelajaran Procedure Text</h2>
+            </div>
+            <button onclick="window.print()" class="no-print px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-300">
+              🖨️ Cetak Materi
+            </button>
+          </div>
+
+          <!-- Sub-Material Navigation Tabs -->
+          <div class="no-print flex gap-2 overflow-x-auto pb-1">
+            ${tabs.map(t => `
+              <button onclick="setMateriTab('${t.id}')" class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${tab === t.id ? 'bg-blue-700 text-white border-blue-700 shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:bg-blue-50'}">
+                ${t.done ? '✅ ' : ''}${t.label}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Active Tab Content -->
+          <div class="print-area">
+            ${contentHtml}
+          </div>
+        </section>
+      `;
+    }
+
+    function toggleExampleTranslation(id) {
+      playSFX('click');
+      const el = document.getElementById('trans_' + id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function renderSubmateriQuiz(key) {
+      const qObj = SUBMATERI_QUIZZES[key];
+      if (!qObj) return '';
+      return `
+        <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-3xl p-6 shadow-lg space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-amber-400 text-blue-950 text-xs font-extrabold">QUICK CHECK QUIZ</span>
+            <span class="text-xs text-blue-200">Uji Pemahaman Submateri</span>
+          </div>
+          <p class="font-bold text-sm sm:text-base">${qObj.q}</p>
+          <div class="grid sm:grid-cols-2 gap-2.5">
+            ${qObj.options.map((opt, idx) => `
+              <button onclick="checkSubQuiz('${key}', ${idx})" class="text-left p-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs sm:text-sm font-medium transition">
+                <strong class="text-amber-300 mr-1.5">${String.fromCharCode(65 + idx)}.</strong> ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <div id="subquiz_fb_${key}" class="hidden p-3.5 rounded-2xl text-xs sm:text-sm font-semibold"></div>
+        </div>
+      `;
+    }
+
+    function checkSubQuiz(key, selectedIdx) {
+      const qObj = SUBMATERI_QUIZZES[key];
+      const fb = document.getElementById('subquiz_fb_' + key);
+      if (!fb || !qObj) return;
+      fb.classList.remove('hidden');
+      if (selectedIdx === qObj.ans) {
+        playSFX('correct');
+        fb.className = 'p-3.5 rounded-2xl text-xs sm:text-sm font-semibold bg-emerald-500/25 border border-emerald-400 text-emerald-100';
+        fb.innerHTML = `✅ <strong>Benar!</strong> ${qObj.exp}`;
+      } else {
+        playSFX('wrong');
+        fb.className = 'p-3.5 rounded-2xl text-xs sm:text-sm font-semibold bg-rose-500/25 border border-rose-400 text-rose-100';
+        fb.innerHTML = `❌ <strong>Kurang tepat.</strong> Jawaban yang benar adalah <strong>${String.fromCharCode(65 + qObj.ans)}</strong>. ${qObj.exp}`;
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 3: MENU 2 – INTERACTIVE SIMULATION ("LET'S MAKE A SANDWICH!")
+       ------------------------------------------------------------------------- */
+    const SANDWICH_CORRECT_ORDER = [
+      'Prepare two slices of bread.',
+      'Spread mayonnaise on the bread.',
+      'Put the cheese on the bread.',
+      'Add lettuce and tomato.',
+      'Put the other slice of bread on top.',
+      'Cut the sandwich into two pieces.'
+    ];
+
+    let sandwichUserSteps = [
+      'Put the cheese on the bread.',
+      'Prepare two slices of bread.',
+      'Add lettuce and tomato.',
+      'Spread mayonnaise on the bread.',
+      'Put the other slice of bread on top.',
+      'Cut the sandwich into two pieces.'
+    ];
+    let sandwichScore = null;
+    let sandwichFeedback = '';
+    let sandwichSolved = false;
+    let draggedIndex = null;
+
+    function renderSimulasiPage() {
+      const ingredients = [
+        { name: 'Bread', emoji: '🍞', desc: '2 slices of fresh bread' },
+        { name: 'Cheese', emoji: '🧀', desc: '1 slice of cheddar cheese' },
+        { name: 'Lettuce', emoji: '🥬', desc: 'Fresh green lettuce leaves' },
+        { name: 'Tomato', emoji: '🍅', desc: 'Sliced ripe red tomato' },
+        { name: 'Mayonnaise', emoji: '🥣', desc: 'Creamy mayonnaise spread' }
+      ];
+
+      return `
+        <section class="fade-slide-in space-y-6">
+          <div class="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-400 rounded-3xl p-6 sm:p-8 text-blue-950 shadow-lg flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span class="px-3 py-1 rounded-full bg-blue-900 text-white text-xs font-extrabold">MENU 2 • INTERACTIVE SIMULATION</span>
+              <h2 class="text-2xl sm:text-4xl font-extrabold mt-2">🥪 LET'S MAKE A SANDWICH!</h2>
+              <p class="text-sm sm:text-base font-semibold mt-1">Susun langkah-langkah membuat sandwich di bawah ini menjadi urutan yang logis dan benar!</p>
+            </div>
+            <div class="bg-white/90 px-5 py-3 rounded-2xl text-center shadow">
+              <span class="text-xs font-bold text-slate-500 block">SIMULATION SCORE</span>
+              <span class="text-2xl font-extrabold text-blue-800">${sandwichScore !== null ? sandwichScore + ' / 100' : '--'}</span>
+            </div>
+          </div>
+
+          <!-- Ingredients Visual Showcase -->
+          <div class="bg-white rounded-3xl p-6 shadow-md border border-blue-100">
+            <h3 class="text-base sm:text-lg font-extrabold text-blue-950 mb-4 flex items-center gap-2">
+              <span>🧺</span> Ingredients & Materials Needed:
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              ${ingredients.map(ing => `
+                <div class="bg-gradient-to-b from-amber-50 to-orange-50 rounded-2xl p-4 border border-orange-200 text-center shadow-sm">
+                  <div class="text-4xl mb-2">${ing.emoji}</div>
+                  <h4 class="font-extrabold text-blue-950 text-sm">${ing.name}</h4>
+                  <p class="text-[11px] text-slate-600 mt-0.5">${ing.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Interactive Drag & Drop / Arrow Ordering Area -->
+          <div class="bg-white rounded-3xl p-6 shadow-md border border-blue-100 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-lg font-extrabold text-blue-950">Susun Urutan Langkah (Drag & Drop atau Klik Panah ⬆️⬇️)</h3>
+                <p class="text-xs text-slate-500">Geser kartu langkah atau gunakan tombol panah di sebelah kanan untuk menukar posisi.</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="checkSandwichOrder()" class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow">
+                  ✅ CHECK ANSWER
+                </button>
+                <button onclick="resetSandwichOrder()" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs sm:text-sm">
+                  🔄 RESET
+                </button>
+                <button onclick="showCorrectSandwichOrder()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-blue-950 font-bold text-xs sm:text-sm">
+                  💡 SHOW CORRECT ORDER
+                </button>
+              </div>
+            </div>
+
+            <div id="sandwichStepsList" class="space-y-2.5">
+              ${sandwichUserSteps.map((step, idx) => {
+                const isRightPos = sandwichScore !== null && step === SANDWICH_CORRECT_ORDER[idx];
+                const borderStyle = sandwichScore === null
+                  ? 'border-slate-200 bg-slate-50 hover:bg-blue-50/60'
+                  : isRightPos
+                    ? 'border-emerald-400 bg-emerald-50'
+                    : 'border-rose-300 bg-rose-50';
+                return `
+                  <div draggable="true"
+                       ondragstart="handleDragStart(${idx})"
+                       ondragover="handleDragOver(event)"
+                       ondrop="handleDrop(${idx})"
+                       class="draggable-item flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl border-2 ${borderStyle}">
+                    <div class="flex items-center gap-3">
+                      <span class="w-8 h-8 rounded-xl bg-blue-700 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
+                        ${idx + 1}
+                      </span>
+                      <span class="font-bold text-slate-800 text-xs sm:text-base">${step}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <button onclick="speakText('${step}', 'en-US')" title="Listen" class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-blue-100 text-xs">🔊</button>
+                      <button onclick="moveSandwichStep(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-orange-100 disabled:opacity-30 font-bold text-xs">⬆️</button>
+                      <button onclick="moveSandwichStep(${idx}, 1)" ${idx === sandwichUserSteps.length - 1 ? 'disabled' : ''} class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-orange-100 disabled:opacity-30 font-bold text-xs">⬇️</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            ${sandwichFeedback ? `
+              <div class="p-4 rounded-2xl ${sandwichSolved ? 'bg-emerald-100 border-2 border-emerald-400 text-emerald-950' : 'bg-amber-100 border-2 border-amber-400 text-amber-950'} font-semibold text-sm">
+                ${sandwichFeedback}
+              </div>
+            ` : ''}
+
+            ${sandwichSolved ? `
+              <div class="mt-6 bg-gradient-to-br from-blue-900 to-blue-950 text-white rounded-3xl p-6 shadow-xl space-y-4 fade-slide-in">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-400 text-blue-950 text-xs font-extrabold">COMPLETE PROCEDURE TEXT</span>
+                    <h4 class="text-xl font-extrabold mt-1">HOW TO MAKE A DELICIOUS SANDWICH</h4>
+                  </div>
+                  <button onclick="speakText('How to Make a Delicious Sandwich. Goal: To make a tasty sandwich. Ingredients: Bread, cheese, lettuce, tomato, and mayonnaise. Steps: ${SANDWICH_CORRECT_ORDER.join(' ')}', 'en-US')" class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold">
+                    🔊 Listen Full Procedure Text
+                  </button>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                  <div class="bg-white/10 p-4 rounded-2xl">
+                    <p class="font-bold text-amber-300">Goal:</p>
+                    <p class="mb-2">To make a healthy and delicious sandwich.</p>
+                    <p class="font-bold text-amber-300">Ingredients:</p>
+                    <ul class="list-disc pl-5">
+                      <li>Two slices of bread</li>
+                      <li>A slice of cheese</li>
+                      <li>Fresh lettuce and tomato</li>
+                      <li>Mayonnaise</li>
+                    </ul>
+                  </div>
+                  <div class="bg-white/10 p-4 rounded-2xl">
+                    <p class="font-bold text-amber-300">Steps:</p>
+                    <ol class="list-decimal pl-5 space-y-1">
+                      ${SANDWICH_CORRECT_ORDER.map((s, i) => {
+                        const connectors = ['First,', 'Second,', 'Next,', 'Then,', 'After that,', 'Finally,'];
+                        return `<li><strong>${connectors[i]}</strong> ${s.charAt(0).toLowerCase() + s.slice(1)}</li>`;
+                      }).join('')}
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </section>
+      `;
+    }
+
+    function handleDragStart(idx) {
+      draggedIndex = idx;
+    }
+    function handleDragOver(e) {
+      e.preventDefault();
+    }
+    function handleDrop(targetIdx) {
+      if (draggedIndex === null || draggedIndex === targetIdx) return;
+      const item = sandwichUserSteps.splice(draggedIndex, 1)[0];
+      sandwichUserSteps.splice(targetIdx, 0, item);
+      draggedIndex = null;
+      sandwichScore = null;
+      playSFX('click');
+      renderApp();
+    }
+    function moveSandwichStep(idx, dir) {
+      const target = idx + dir;
+      if (target < 0 || target >= sandwichUserSteps.length) return;
+      const temp = sandwichUserSteps[idx];
+      sandwichUserSteps[idx] = sandwichUserSteps[target];
+      sandwichUserSteps[target] = temp;
+      sandwichScore = null;
+      playSFX('click');
+      renderApp();
+    }
+    function checkSandwichOrder() {
+      let correctCount = 0;
+      sandwichUserSteps.forEach((step, idx) => {
+        if (step === SANDWICH_CORRECT_ORDER[idx]) correctCount++;
+      });
+      sandwichScore = Math.round((correctCount / SANDWICH_CORRECT_ORDER.length) * 100);
+      if (correctCount === SANDWICH_CORRECT_ORDER.length) {
+        sandwichSolved = true;
+        sandwichFeedback = '🎉 Luar Biasa! Semua langkah membuat sandwich sudah tersusun dengan tepat (Skor: 100). Simak teks prosedur lengkap di bawah ini!';
+        playSFX('fanfare');
+        markCompleted('simulasi');
+      } else {
+        sandwichSolved = false;
+        sandwichFeedback = `⚠️ ${correctCount} dari ${SANDWICH_CORRECT_ORDER.length} langkah sudah berada di posisi yang benar. Periksa kembali langkah yang berwarna merah!`;
+        playSFX('wrong');
+      }
+      renderApp();
+    }
+    function resetSandwichOrder() {
+      playSFX('click');
+      sandwichUserSteps = [
+        'Put the cheese on the bread.',
+        'Prepare two slices of bread.',
+        'Add lettuce and tomato.',
+        'Spread mayonnaise on the bread.',
+        'Put the other slice of bread on top.',
+        'Cut the sandwich into two pieces.'
+      ];
+      sandwichScore = null;
+      sandwichFeedback = '';
+      sandwichSolved = false;
+      renderApp();
+    }
+    function showCorrectSandwichOrder() {
+      playSFX('correct');
+      sandwichUserSteps = [...SANDWICH_CORRECT_ORDER];
+      sandwichScore = 100;
+      sandwichSolved = true;
+      sandwichFeedback = '💡 Berikut adalah urutan langkah yang benar untuk membuat sandwich.';
+      markCompleted('simulasi');
+      renderApp();
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 4: MENU 3 – PRAKTIKUM ("LET'S CREATE YOUR OWN PROCEDURE TEXT!")
+       ------------------------------------------------------------------------- */
+    function renderPraktikumPage() {
+      const p = appState.praktikumData;
+      const themes = [
+        'How to Make Fried Rice',
+        'How to Make a Cup of Tea',
+        'How to Make Orange Juice',
+        'How to Use a Washing Machine',
+        'How to Operate a Computer',
+        'How to Make a Simple Craft'
+      ];
+
+      const rubric = [
+        { aspect: '1. Generic Structure', desc: 'Memuat Goal, Materials/Ingredients, dan Steps secara lengkap dan jelas.', max: 25 },
+        { aspect: '2. Vocabulary', desc: 'Pemilihan kosakata action verbs, nouns, dan istilah teknis yang tepat.', max: 20 },
+        { aspect: '3. Grammar', desc: 'Penggunaan imperative sentences (V1) dan simple present tense secara akurat.', max: 20 },
+        { aspect: '4. Sequence & Coherence', desc: 'Penggunaan sequence connectors (First, Next, Finally) dan alur langkah logis.', max: 20 },
+        { aspect: '5. Creativity & Presentation', desc: 'Kejelasan instruksi, minimal 5 langkah, dan kerapian penyajian.', max: 15 }
+      ];
+
+      return `
+        <section class="fade-slide-in space-y-6">
+          <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white rounded-3xl p-6 sm:p-8 shadow-lg">
+            <span class="px-3 py-1 rounded-full bg-amber-400 text-blue-950 text-xs font-extrabold">MENU 3 • WRITING & SPEAKING PRACTICUM</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2">✍️ LET'S CREATE YOUR OWN PROCEDURE TEXT!</h2>
+            <p class="text-sm text-emerald-100 mt-1">Pilih tema proyek, susun teks prosedur minimal 5 langkah, lalu dengarkan atau cetak hasil karyamu.</p>
+          </div>
+
+          <div class="grid lg:grid-cols-12 gap-6">
+            <!-- Left: Interactive Digital Worksheet -->
+            <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-md border border-blue-100 space-y-4 print-area">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-extrabold text-blue-950">Lembar Kerja Praktikum Siswa</h3>
+                <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700">Min. 5 Steps</span>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Student's Name (Nama Siswa)</label>
+                  <input id="prakName" type="text" value="${escapeHtml(p.name)}" placeholder="Contoh: Ahmad Fauzan" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm"/>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Class (Kelas)</label>
+                  <input id="prakClass" type="text" value="${escapeHtml(p.studentClass)}" placeholder="Contoh: XI-A" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm"/>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Tema Proyek (Theme)</label>
+                <select id="prakTheme" onchange="applyPraktikumTheme(this.value)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm bg-blue-50/50 font-semibold">
+                  ${themes.map(t => `<option value="${t}" ${p.theme === t ? 'selected' : ''}>${t}</option>`).join('')}
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Title / Goal (Judul & Tujuan)</label>
+                <input id="prakGoal" type="text" value="${escapeHtml(p.goal || p.theme)}" placeholder="Contoh: How to Make a Cup of Warm Tea" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm font-semibold"/>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Materials / Ingredients / Tools (Bahan & Alat)</label>
+                <textarea id="prakMaterials" rows="3" placeholder="- 1 tea bag&#10;- 200 ml hot water&#10;- 2 teaspoons of sugar&#10;- A cup and a spoon" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm">${escapeHtml(p.materials)}</textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Steps / Methods (Minimal 5 Langkah dengan Imperative Verbs & Sequence Connectors)</label>
+                <textarea id="prakSteps" rows="6" placeholder="1. First, boil the water until hot.&#10;2. Second, put the tea bag into the cup.&#10;3. Next, pour the hot water into the cup.&#10;4. Then, add two teaspoons of sugar and stir well.&#10;5. Finally, remove the tea bag and serve the tea warm." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm">${escapeHtml(p.steps)}</textarea>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="no-print flex flex-wrap gap-2 pt-2">
+                <button onclick="savePraktikumWork()" class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm shadow">
+                  💾 SAVE WORK
+                </button>
+                <button onclick="speakPraktikumWork()" class="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow">
+                  🔊 READ ALOUD (ENGLISH)
+                </button>
+                <button onclick="copyPraktikumText()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-blue-950 font-bold text-xs sm:text-sm">
+                  📋 COPY TEXT
+                </button>
+                <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm">
+                  🖨️ PRINT
+                </button>
+                <button onclick="clearPraktikumWork()" class="px-4 py-2.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs sm:text-sm">
+                  🗑️ CLEAR
+                </button>
+              </div>
+
+              <div id="praktikumValidationBox" class="hidden p-3.5 rounded-2xl text-xs sm:text-sm font-semibold"></div>
+            </div>
+
+            <!-- Right: Rubric & Good Reference Example -->
+            <div class="lg:col-span-5 space-y-5">
+              <!-- Assessment Rubric -->
+              <div class="bg-white rounded-3xl p-5 shadow-md border border-blue-100 space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-base font-extrabold text-blue-950">📊 Rubrik Penilaian Praktikum</h3>
+                  <span class="px-2.5 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-extrabold">Total: 100 Poin</span>
+                </div>
+                <div class="space-y-2">
+                  ${rubric.map(r => `
+                    <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
+                      <div>
+                        <p class="font-bold text-blue-900 text-xs sm:text-sm">${r.aspect}</p>
+                        <p class="text-[11px] text-slate-600">${r.desc}</p>
+                      </div>
+                      <span class="shrink-0 px-2.5 py-1 rounded-lg bg-blue-700 text-white text-xs font-extrabold">${r.max} pts</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Reference Good Example -->
+              <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-5 border-2 border-amber-300 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded-full bg-amber-400 text-blue-950 text-[11px] font-extrabold">MODEL / REFERENSI</span>
+                  <button onclick="speakText('How to Make a Cup of Hot Tea. Materials: One tea bag, a cup of hot water, two teaspoons of sugar, a cup, and a spoon. Steps: First, boil clean water until it reaches a rolling boil. Second, place one tea bag into a clean cup. Next, pour the hot water carefully into the cup. Then, wait for three minutes and remove the tea bag. After that, add two teaspoons of sugar and stir well. Finally, serve the hot tea while warm.', 'en-US')" class="px-2.5 py-1 rounded-lg bg-blue-700 text-white text-xs font-bold">🔊 Listen Model</button>
+                </div>
+                <h4 class="font-extrabold text-blue-950 text-sm sm:text-base">HOW TO MAKE A CUP OF HOT TEA</h4>
+                <p class="text-xs text-slate-700"><strong>Materials:</strong> 1 tea bag, a cup of hot water, 2 teaspoons of sugar, a cup, a spoon.</p>
+                <ol class="list-decimal pl-5 text-xs text-slate-800 space-y-1">
+                  <li><strong>First,</strong> boil clean water until it reaches a rolling boil.</li>
+                  <li><strong>Second,</strong> place one tea bag into a clean cup.</li>
+                  <li><strong>Next,</strong> pour the hot water carefully into the cup.</li>
+                  <li><strong>Then,</strong> wait for three minutes and remove the tea bag.</li>
+                  <li><strong>After that,</strong> add two teaspoons of sugar and stir well.</li>
+                  <li><strong>Finally,</strong> serve the hot tea while warm.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function applyPraktikumTheme(val) {
+      const goalInput = document.getElementById('prakGoal');
+      if (goalInput) goalInput.value = val;
+    }
+
+    function savePraktikumWork() {
+      const name = document.getElementById('prakName').value.trim();
+      const studentClass = document.getElementById('prakClass').value.trim();
+      const theme = document.getElementById('prakTheme').value;
+      const goal = document.getElementById('prakGoal').value.trim();
+      const materials = document.getElementById('prakMaterials').value.trim();
+      const steps = document.getElementById('prakSteps').value.trim();
+
+      appState.praktikumData = { name, studentClass, theme, goal, materials, steps };
+      saveState();
+
+      const stepLines = steps.split('\n').filter(line => line.trim().length > 2);
+      const valBox = document.getElementById('praktikumValidationBox');
+      valBox.classList.remove('hidden');
+
+      if (!goal || !materials || stepLines.length < 5) {
+        playSFX('wrong');
+        valBox.className = 'p-3.5 rounded-2xl text-xs sm:text-sm font-semibold bg-amber-100 border border-amber-400 text-amber-950';
+        valBox.innerHTML = `⚠️ Karya tersimpan sementara, namun pastikan <strong>Title/Goal, Materials,</strong> dan <strong>minimal 5 langkah</strong> (saat ini baru ${stepLines.length} baris langkah) sudah terisi lengkap.`;
+      } else {
+        playSFX('correct');
+        markCompleted('praktikum');
+        valBox.className = 'p-3.5 rounded-2xl text-xs sm:text-sm font-semibold bg-emerald-100 border border-emerald-400 text-emerald-950';
+        valBox.innerHTML = `✅ Hebat, ${name || 'Siswa'}! Procedure Text Anda telah memenuhi struktur lengkap (${stepLines.length} langkah) dan tersimpan otomatis.`;
+      }
+    }
+
+    function speakPraktikumWork() {
+      const goal = document.getElementById('prakGoal').value.trim();
+      const materials = document.getElementById('prakMaterials').value.trim();
+      const steps = document.getElementById('prakSteps').value.trim();
+      if (!goal && !steps) {
+        showToast('Isi terlebih dahulu judul dan langkah-langkah prosedur Anda.', '⚠️');
+        return;
+      }
+      speakText(`${goal}. Materials: ${materials}. Steps: ${steps}`, 'en-US');
+    }
+
+    function copyPraktikumText() {
+      const name = document.getElementById('prakName').value.trim();
+      const studentClass = document.getElementById('prakClass').value.trim();
+      const goal = document.getElementById('prakGoal').value.trim();
+      const materials = document.getElementById('prakMaterials').value.trim();
+      const steps = document.getElementById('prakSteps').value.trim();
+
+      const formatted = `PROCEDURE TEXT PROJECT\nName: ${name}\nClass: ${studentClass}\n\nTITLE / GOAL:\n${goal}\n\nMATERIALS / INGREDIENTS:\n${materials}\n\nSTEPS:\n${steps}`;
+      const tempArea = document.createElement('textarea');
+      tempArea.value = formatted;
+      document.body.appendChild(tempArea);
+      tempArea.select();
+      try {
+        document.execCommand('copy');
+        playSFX('correct');
+        showToast('Teks Procedure Text berhasil disalin ke clipboard!', '📋');
+      } catch (e) {
+        showToast('Gagal menyalin teks.', '⚠️');
+      }
+      document.body.removeChild(tempArea);
+    }
+
+    function clearPraktikumWork() {
+      playSFX('click');
+      appState.praktikumData = { name: '', studentClass: 'XI', theme: 'How to Make Fried Rice', goal: '', materials: '', steps: '' };
+      saveState();
+      renderApp();
+      showToast('Lembar kerja praktikum telah dibersihkan.', '🗑️');
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 5: MENU 4 – ENGLISH FUN ZONE (3 INTERACTIVE GAMES)
+       ------------------------------------------------------------------------- */
+    const GAME1_PAIRS = [
+      { id: 1, en: 'Stir', idn: 'Mengaduk' },
+      { id: 2, en: 'Pour', idn: 'Menuangkan' },
+      { id: 3, en: 'Slice', idn: 'Mengiris tipis' },
+      { id: 4, en: 'Squeeze', idn: 'Memeras' },
+      { id: 5, en: 'Spread', idn: 'Mengoleskan' },
+      { id: 6, en: 'Boil', idn: 'Merebus hingga mendidih' },
+      { id: 7, en: 'Peel', idn: 'Mengupas kulit' },
+      { id: 8, en: 'Plug in', idn: 'Mencolokkan kabel listrik' },
+      { id: 9, en: 'Ingredients', idn: 'Bahan-bahan' },
+      { id: 10, en: 'Finally', idn: 'Terakhir / Akhirnya' }
+    ];
+
+    let g1SelectedEn = null;
+    let g1MatchedIds = [];
+    let g1Score = 0;
+    let g1ShuffledIdn = [...GAME1_PAIRS].sort(() => Math.random() - 0.5);
+
+    const GAME2_TARGET = [
+      'First, put a tea bag into a clean cup.',
+      'Second, pour hot water into the cup.',
+      'Next, let it steep for 3 minutes.',
+      'Then, add two teaspoons of sugar.',
+      'Finally, stir well and serve hot.'
+    ];
+    let g2UserOrder = [
+      'Then, add two teaspoons of sugar.',
+      'First, put a tea bag into a clean cup.',
+      'Finally, stir well and serve hot.',
+      'Second, pour hot water into the cup.',
+      'Next, let it steep for 3 minutes.'
+    ];
+    let g2Completed = false;
+    let g2Score = 0;
+
+    const GAME3_QUESTIONS = [
+      {
+        icon: '🖨️📄',
+        clues: [
+          '1. Turn on the machine and check the paper tray.',
+          '2. Connect the USB cable or Wi-Fi to your laptop.',
+          '3. Open your document and press Ctrl + P.',
+          '4. Click Print and wait for the paper to come out.'
+        ],
+        options: ['How to Use a Printer', 'How to Wash Clothes', 'How to Make Coffee', 'How to Use a Blender'],
+        ans: 0
+      },
+      {
+        icon: '🍜🥚🔥',
+        clues: [
+          '1. Boil 400 ml of water in a saucepan.',
+          '2. Put the noodles into the boiling water for 3 minutes.',
+          '3. Pour the seasoning powder and oil into a bowl.',
+          '4. Drain the noodles, mix with seasoning, and serve.'
+        ],
+        options: ['How to Make Orange Juice', 'How to Cook Instant Noodles', 'How to Bake a Cake', 'How to Make a Sandwich'],
+        ans: 1
+      },
+      {
+        icon: '👕🧺🫧',
+        clues: [
+          '1. Separate white clothes from colored ones.',
+          '2. Put the clothes inside the drum and add detergent.',
+          '3. Select the wash cycle and press Start.',
+          '4. Hang the clean clothes under the sunlight.'
+        ],
+        options: ['How to Iron a Shirt', 'How to Operate a Washing Machine', 'How to Clean Shoes', 'How to Fold Clothes'],
+        ans: 1
+      },
+      {
+        icon: '🧼👐💧',
+        clues: [
+          '1. Wet your hands with clean running water.',
+          '2. Apply enough soap and rub palms together for 20 seconds.',
+          '3. Rinse your hands thoroughly under running water.',
+          '4. Dry your hands using a clean towel.'
+        ],
+        options: ['How to Brush Your Teeth', 'How to Wash Your Hands Properly', 'How to Take a Bath', 'How to Wash Dishes'],
+        ans: 1
+      }
+    ];
+    let g3Index = 0;
+    let g3Score = 0;
+    let g3Answered = false;
+    let g3Finished = false;
+
+    function setGameTab(tab) {
+      playSFX('click');
+      appState.activeGameTab = tab;
+      renderApp();
+    }
+
+    function renderStars(score, maxScore = 100) {
+      const ratio = score / maxScore;
+      const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : ratio > 0 ? 1 : 0;
+      return '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+    }
+
+    function renderGamePage() {
+      const tab = appState.activeGameTab || 'game1';
+      let gameBody = '';
+
+      if (tab === 'game1') {
+        const allDone = g1MatchedIds.length === GAME1_PAIRS.length;
+        gameBody = `
+          <div class="space-y-5 fade-slide-in">
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-purple-50 p-4 rounded-2xl border border-purple-200">
+              <div>
+                <h3 class="text-lg font-extrabold text-purple-950">GAME 1: WORD HUNTER (10 Kosakata Procedure Text)</h3>
+                <p class="text-xs sm:text-sm text-slate-600">Klik kata Bahasa Inggris di kolom kiri, lalu klik arti Bahasa Indonesianya di kolom kanan.</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="bg-white px-4 py-2 rounded-xl border border-purple-200 text-center">
+                  <span class="text-[11px] font-bold text-slate-500 block">SCORE</span>
+                  <span class="text-lg font-extrabold text-purple-800">${g1Score} / 100</span>
+                </div>
+                <button onclick="resetGame1()" class="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm">🔄 PLAY AGAIN</button>
+              </div>
+            </div>
+
+            ${allDone ? `
+              <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-6 text-center space-y-2 shadow-lg">
+                <div class="text-4xl">${renderStars(g1Score)}</div>
+                <h4 class="text-2xl font-extrabold">CONGRATULATIONS! WORD HUNTER COMPLETED!</h4>
+                <p class="text-sm">Skor Akhir Anda: <strong>${g1Score} / 100</strong></p>
+                <button onclick="resetGame1()" class="mt-2 px-5 py-2 rounded-xl bg-amber-400 text-blue-950 font-extrabold text-xs sm:text-sm">🔄 PLAY AGAIN</button>
+              </div>
+            ` : ''}
+
+            <div class="grid md:grid-cols-2 gap-5">
+              <!-- English Words -->
+              <div class="space-y-2">
+                <h4 class="text-xs font-extrabold uppercase text-blue-800 px-1">🇬🇧 English Vocabulary</h4>
+                ${GAME1_PAIRS.map(item => {
+                  const matched = g1MatchedIds.includes(item.id);
+                  const selected = g1SelectedEn === item.id;
+                  return `
+                    <button onclick="selectGame1En(${item.id})" ${matched ? 'disabled' : ''} class="w-full text-left px-4 py-3 rounded-2xl border-2 font-bold text-sm transition flex items-center justify-between ${matched ? 'bg-emerald-100 border-emerald-400 text-emerald-900 opacity-75' : selected ? 'bg-blue-700 border-blue-800 text-white shadow-md' : 'bg-white border-slate-200 hover:border-blue-400 text-slate-800'}">
+                      <span>${item.en}</span>
+                      <span>${matched ? '✅' : selected ? '👉' : '🔊'}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- Indonesian Meanings -->
+              <div class="space-y-2">
+                <h4 class="text-xs font-extrabold uppercase text-orange-800 px-1">🇮🇩 Arti Bahasa Indonesia</h4>
+                ${g1ShuffledIdn.map(item => {
+                  const matched = g1MatchedIds.includes(item.id);
+                  return `
+                    <button onclick="selectGame1Idn(${item.id})" ${matched ? 'disabled' : ''} class="w-full text-left px-4 py-3 rounded-2xl border-2 font-semibold text-sm transition flex items-center justify-between ${matched ? 'bg-emerald-100 border-emerald-400 text-emerald-900 opacity-75' : 'bg-white border-slate-200 hover:border-orange-400 text-slate-700'}">
+                      <span>${item.idn}</span>
+                      <span>${matched ? '✅' : '🎯'}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'game2') {
+        gameBody = `
+          <div class="space-y-5 fade-slide-in">
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-orange-50 p-4 rounded-2xl border border-orange-200">
+              <div>
+                <h3 class="text-lg font-extrabold text-orange-950">GAME 2: ARRANGE THE STEPS (How to Make Hot Tea)</h3>
+                <p class="text-xs sm:text-sm text-slate-600">Urutkan langkah-langkah membuat teh hangat menggunakan tombol panah ⬆️ ⬇️.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="checkGame2()" class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm">✅ CHECK ORDER</button>
+                <button onclick="resetGame2()" class="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm">🔄 PLAY AGAIN</button>
+              </div>
+            </div>
+
+            ${g2Completed ? `
+              <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-3xl p-6 text-center space-y-2 shadow-lg">
+                <div class="text-4xl">${renderStars(g2Score)}</div>
+                <h4 class="text-2xl font-extrabold">GREAT JOB! PERFECT SEQUENCE!</h4>
+                <p class="text-sm">Skor Akhir: <strong>${g2Score} / 100</strong></p>
+                <button onclick="resetGame2()" class="mt-2 px-5 py-2 rounded-xl bg-amber-400 text-blue-950 font-extrabold text-xs sm:text-sm">🔄 PLAY AGAIN</button>
+              </div>
+            ` : ''}
+
+            <div class="space-y-2.5">
+              ${g2UserOrder.map((step, idx) => `
+                <div class="flex items-center justify-between gap-3 p-4 rounded-2xl bg-white border-2 border-slate-200 shadow-sm">
+                  <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-orange-500 text-white font-extrabold text-sm flex items-center justify-center">${idx + 1}</span>
+                    <span class="font-bold text-slate-800 text-sm sm:text-base">${step}</span>
+                  </div>
+                  <div class="flex gap-1.5">
+                    <button onclick="moveGame2(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-100 disabled:opacity-30 font-bold">⬆️</button>
+                    <button onclick="moveGame2(${idx}, 1)" ${idx === g2UserOrder.length - 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-100 disabled:opacity-30 font-bold">⬇️</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (tab === 'game3') {
+        const q = GAME3_QUESTIONS[g3Index];
+        gameBody = `
+          <div class="space-y-5 fade-slide-in">
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-blue-50 p-4 rounded-2xl border border-blue-200">
+              <div>
+                <h3 class="text-lg font-extrabold text-blue-950">GAME 3: GUESS THE PROCEDURE</h3>
+                <p class="text-xs sm:text-sm text-slate-600">Baca petunjuk langkah dan tebak judul Procedure Text yang tepat!</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="px-3 py-1.5 rounded-xl bg-white border border-blue-200 text-xs font-extrabold text-blue-800">Ronde ${g3Index + 1} / ${GAME3_QUESTIONS.length} • Skor: ${g3Score}</span>
+                <button onclick="resetGame3()" class="px-4 py-2 rounded-xl bg-orange-500 text-white font-bold text-xs">🔄 PLAY AGAIN</button>
+              </div>
+            </div>
+
+            ${g3Finished ? `
+              <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-3xl p-8 text-center space-y-3 shadow-xl">
+                <div class="text-5xl">${renderStars(g3Score)}</div>
+                <h4 class="text-2xl sm:text-3xl font-extrabold">GAME COMPLETED!</h4>
+                <p class="text-base font-semibold">Skor Akhir Anda: <strong>${g3Score} / 100</strong></p>
+                <button onclick="resetGame3()" class="px-6 py-3 rounded-2xl bg-blue-900 hover:bg-blue-950 text-white font-extrabold text-sm">🔄 PLAY AGAIN</button>
+              </div>
+            ` : `
+              <div class="bg-white rounded-3xl p-6 border-2 border-blue-100 shadow-md space-y-5">
+                <div class="text-center">
+                  <div class="text-5xl mb-2">${q.icon}</div>
+                  <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold">CLUES / STEPS:</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1.5 max-w-xl mx-auto">
+                  ${q.clues.map(c => `<p class="text-xs sm:text-sm font-semibold text-slate-700">${c}</p>`).join('')}
+                </div>
+                <div class="grid sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                  ${q.options.map((opt, idx) => `
+                    <button onclick="answerGame3(${idx})" class="p-4 rounded-2xl border-2 border-blue-200 hover:border-orange-500 hover:bg-orange-50 text-left font-extrabold text-blue-950 text-sm transition">
+                      ${String.fromCharCode(65 + idx)}. ${opt}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      return `
+        <section class="fade-slide-in space-y-5">
+          <div class="bg-gradient-to-r from-indigo-700 via-purple-700 to-blue-800 text-white rounded-3xl p-6 shadow-lg">
+            <span class="px-3 py-1 rounded-full bg-amber-400 text-blue-950 text-xs font-extrabold">MENU 4 • ENGLISH FUN ZONE</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2">🎮 Interactive English Games</h2>
+            <p class="text-xs sm:text-sm text-purple-100 mt-1">Asah kosakata dan pemahaman langkah Procedure Text melalui 3 permainan edukatif!</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setGameTab('game1')" class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold border transition ${tab === 'game1' ? 'bg-purple-700 text-white border-purple-700 shadow' : 'bg-white text-slate-700 border-slate-200'}">
+              ${appState.completedModules.game1 ? '⭐ ' : ''}1. Word Hunter
+            </button>
+            <button onclick="setGameTab('game2')" class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold border transition ${tab === 'game2' ? 'bg-orange-600 text-white border-orange-600 shadow' : 'bg-white text-slate-700 border-slate-200'}">
+              ${appState.completedModules.game2 ? '⭐ ' : ''}2. Arrange The Steps
+            </button>
+            <button onclick="setGameTab('game3')" class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold border transition ${tab === 'game3' ? 'bg-blue-700 text-white border-blue-700 shadow' : 'bg-white text-slate-700 border-slate-200'}">
+              ${appState.completedModules.game3 ? '⭐ ' : ''}3. Guess The Procedure
+            </button>
+          </div>
+
+          ${gameBody}
+        </section>
+      `;
+    }
+
+    function selectGame1En(id) {
+      g1SelectedEn = id;
+      const item = GAME1_PAIRS.find(p => p.id === id);
+      if (item) speakText(item.en, 'en-US');
+      renderApp();
+    }
+    function selectGame1Idn(id) {
+      if (g1SelectedEn === null) {
+        showToast('Pilih kata Bahasa Inggris di kolom kiri terlebih dahulu!', '👈');
+        return;
+      }
+      if (g1SelectedEn === id) {
+        g1MatchedIds.push(id);
+        g1Score += 10;
+        g1SelectedEn = null;
+        playSFX('correct');
+        if (g1MatchedIds.length === GAME1_PAIRS.length) {
+          playSFX('fanfare');
+          markCompleted('game1');
+        }
+      } else {
+        playSFX('wrong');
+        showToast('Pasangan arti belum tepat, coba lagi!', '❌');
+        g1SelectedEn = null;
+      }
+      renderApp();
+    }
+    function resetGame1() {
+      playSFX('click');
+      g1SelectedEn = null;
+      g1MatchedIds = [];
+      g1Score = 0;
+      g1ShuffledIdn = [...GAME1_PAIRS].sort(() => Math.random() - 0.5);
+      renderApp();
+    }
+
+    function moveGame2(idx, dir) {
+      const target = idx + dir;
+      if (target < 0 || target >= g2UserOrder.length) return;
+      const tmp = g2UserOrder[idx];
+      g2UserOrder[idx] = g2UserOrder[target];
+      g2UserOrder[target] = tmp;
+      playSFX('click');
+      renderApp();
+    }
+    function checkGame2() {
+      let ok = 0;
+      g2UserOrder.forEach((s, i) => { if (s === GAME2_TARGET[i]) ok++; });
+      g2Score = Math.round((ok / GAME2_TARGET.length) * 100);
+      if (ok === GAME2_TARGET.length) {
+        g2Completed = true;
+        playSFX('fanfare');
+        markCompleted('game2');
+        showToast('Sempurna! Semua urutan langkah tepat (Skor 100)!', '🎉');
+      } else {
+        playSFX('wrong');
+        showToast(`${ok} dari ${GAME2_TARGET.length} langkah sudah tepat. Ayo perbaiki urutannya!`, '⚠️');
+      }
+      renderApp();
+    }
+    function resetGame2() {
+      playSFX('click');
+      g2UserOrder = [...GAME2_TARGET].sort(() => Math.random() - 0.5);
+      g2Completed = false;
+      g2Score = 0;
+      renderApp();
+    }
+
+    function answerGame3(selectedIdx) {
+      const q = GAME3_QUESTIONS[g3Index];
+      if (selectedIdx === q.ans) {
+        g3Score += 25;
+        playSFX('correct');
+        showToast('Benar! +25 Poin', '✅');
+      } else {
+        playSFX('wrong');
+        showToast(`Kurang tepat! Jawaban yang benar: ${q.options[q.ans]}`, '❌');
+      }
+      if (g3Index < GAME3_QUESTIONS.length - 1) {
+        g3Index++;
+      } else {
+        g3Finished = true;
+        playSFX('fanfare');
+        markCompleted('game3');
+      }
+      renderApp();
+    }
+    function resetGame3() {
+      playSFX('click');
+      g3Index = 0;
+      g3Score = 0;
+      g3Finished = false;
+      renderApp();
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 6: MENU 5 – LKPD (LEMBAR KERJA PESERTA DIDIK)
+       ------------------------------------------------------------------------- */
+    const LKPD_ACT4A_STEPS = [
+      'First, wash the strawberries with clean water.',
+      'Second, put the strawberries, milk, and sugar into a blender.',
+      'Next, blend all ingredients until smooth.',
+      'Finally, pour the strawberry smoothie into a glass and serve.'
+    ];
+    const LKPD_ACT4B_STEPS = [
+      'First, insert the ATM card into the card slot.',
+      'Second, select your preferred language and enter your PIN.',
+      'Next, choose the withdrawal amount and confirm.',
+      'Finally, take your cash, receipt, and ATM card.'
+    ];
+    let lkpdScoreFeedback = '';
+
+    function renderLKPDPage() {
+      const d = appState.lkpdData;
+      return `
+        <section class="fade-slide-in space-y-6">
+          <!-- Header Identity Card -->
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-blue-200 print-area">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-blue-100 pb-4 mb-5">
+              <div>
+                <span class="px-3 py-1 rounded-full bg-amber-400 text-blue-950 text-xs font-extrabold">MENU 5 • DIGITAL WORKSHEET</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-950 mt-1">LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>
+                <p class="text-xs sm:text-sm font-semibold text-slate-600">Subject: English • Class: XI (Fase F) • Topic: Procedure Text</p>
+              </div>
+              <div class="no-print flex flex-wrap gap-2">
+                <button onclick="checkLKPDAnswers()" class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow">✅ CHECK ANSWERS</button>
+                <button onclick="saveLKPD()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm">💾 SAVE</button>
+                <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm">🖨️ PRINT / PDF</button>
+              </div>
+            </div>
+
+            <!-- Student Identity Fields -->
+            <div class="grid sm:grid-cols-3 gap-3 mb-6">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Siswa (Student's Name)</label>
+                <input id="lkpdName" type="text" value="${escapeHtml(d.name)}" placeholder="Nama lengkap..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kelas (Class)</label>
+                <input id="lkpdClass" type="text" value="${escapeHtml(d.studentClass)}" placeholder="XI-..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kelompok (Group)</label>
+                <input id="lkpdGroup" type="text" value="${escapeHtml(d.group)}" placeholder="Kelompok 1 / Mandiri" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm"/>
+              </div>
+            </div>
+
+            ${lkpdScoreFeedback ? `
+              <div class="mb-6 p-4 rounded-2xl bg-blue-50 border-2 border-blue-300 text-blue-950 font-semibold text-sm">
+                ${lkpdScoreFeedback}
+              </div>
+            ` : ''}
+
+            <!-- Reference Text for Activity 1 & 2 -->
+            <div class="bg-gradient-to-br from-blue-50 to-amber-50 rounded-2xl p-5 border border-blue-200 mb-6 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold text-blue-800 uppercase">📖 Reading Passage (Untuk Activity 1 & 2)</span>
+                <button onclick="speakText('How to Make Iced Lemon Tea. Goal: To make a refreshing glass of iced lemon tea. Materials: One tea bag, half a fresh lemon, two teaspoons of honey, a glass of hot water, and ice cubes. Steps: First, steep the tea bag in a glass of hot water for three minutes. Second, remove the tea bag and squeeze the fresh lemon into the tea. Next, add two teaspoons of honey and stir evenly. Then, let the tea cool down for a moment. Finally, add ice cubes into the glass and serve immediately.', 'en-US')" class="no-print px-3 py-1 rounded-lg bg-blue-700 text-white text-xs font-bold">🔊 Listen Text</button>
+              </div>
+              <h3 class="font-extrabold text-blue-950 text-base">HOW TO MAKE ICED LEMON TEA</h3>
+              <p class="text-xs sm:text-sm text-slate-700"><strong>Goal:</strong> To make a refreshing glass of iced lemon tea.</p>
+              <p class="text-xs sm:text-sm text-slate-700"><strong>Materials:</strong> One tea bag, half a fresh lemon, two teaspoons of honey, a glass of hot water, and ice cubes.</p>
+              <p class="text-xs sm:text-sm text-slate-700"><strong>Steps:</strong> First, steep the tea bag in a glass of hot water for three minutes. Second, remove the tea bag and squeeze the fresh lemon into the tea. Next, add two teaspoons of honey and stir evenly. Then, let the tea cool down for a moment. Finally, add ice cubes into the glass and serve immediately.</p>
+            </div>
+
+            <div class="space-y-6">
+              <!-- ACTIVITY 1 -->
+              <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3">
+                <h4 class="font-extrabold text-blue-900 text-base">ACTIVITY 1 – IDENTIFY THE STRUCTURE</h4>
+                <p class="text-xs text-slate-600">Berdasarkan teks <em>"How to Make Iced Lemon Tea"</em> di atas, tuliskan bagian strukturnya:</p>
+                <div class="grid md:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">1. Goal:</label>
+                    <textarea id="lkpdAct1Goal" rows="2" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs">${escapeHtml(d.act1_goal)}</textarea>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">2. Materials:</label>
+                    <textarea id="lkpdAct1Mat" rows="2" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs">${escapeHtml(d.act1_materials)}</textarea>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">3. Steps (Ringkasan):</label>
+                    <textarea id="lkpdAct1Steps" rows="2" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs">${escapeHtml(d.act1_steps)}</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTIVITY 2 -->
+              <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3">
+                <h4 class="font-extrabold text-blue-900 text-base">ACTIVITY 2 – LANGUAGE FEATURES</h4>
+                <p class="text-xs text-slate-600">Temukan unsur kebahasaan dari teks <em>"How to Make Iced Lemon Tea"</em>:</p>
+                <div class="grid md:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">5 Imperative Verbs:</label>
+                    <input id="lkpdAct2Imp" type="text" value="${escapeHtml(d.act2_imp)}" placeholder="steep, remove, squeeze, add, stir" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs"/>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">5 Action Verbs:</label>
+                    <input id="lkpdAct2Act" type="text" value="${escapeHtml(d.act2_act)}" placeholder="squeeze, add, stir, cool, serve" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs"/>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">3 Sequence Connectors:</label>
+                    <input id="lkpdAct2Conn" type="text" value="${escapeHtml(d.act2_conn)}" placeholder="First, Second, Next / Then / Finally" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs"/>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTIVITY 3 -->
+              <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3">
+                <h4 class="font-extrabold text-blue-900 text-base">ACTIVITY 3 – COMPLETE THE TEXT (5 Bagian Rumpang)</h4>
+                <p class="text-xs text-slate-600">Lengkapi teks prosedur berikut dengan memilih kata yang tepat:</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs sm:text-sm leading-loose">
+                  <strong>HOW TO MAKE BANANA MILKSHAKE</strong><br/>
+                  <strong>(1)</strong>
+                  <select id="lkpdAct3_0" class="px-2 py-1 rounded-lg border border-blue-300 bg-blue-50 font-bold text-blue-900">
+                    <option value="">-- pilih --</option>
+                    <option value="First" ${d.act3[0] === 'First' ? 'selected' : ''}>First</option>
+                    <option value="Finally" ${d.act3[0] === 'Finally' ? 'selected' : ''}>Finally</option>
+                  </select>,
+                  <strong>(2)</strong>
+                  <select id="lkpdAct3_1" class="px-2 py-1 rounded-lg border border-blue-300 bg-blue-50 font-bold text-blue-900">
+                    <option value="">-- pilih --</option>
+                    <option value="peel" ${d.act3[1] === 'peel' ? 'selected' : ''}>peel</option>
+                    <option value="boil" ${d.act3[1] === 'boil' ? 'selected' : ''}>boil</option>
+                  </select>
+                  two ripe bananas and cut them into small pieces. Second,
+                  <strong>(3)</strong>
+                  <select id="lkpdAct3_2" class="px-2 py-1 rounded-lg border border-blue-300 bg-blue-50 font-bold text-blue-900">
+                    <option value="">-- pilih --</option>
+                    <option value="put" ${d.act3[2] === 'put' ? 'selected' : ''}>put</option>
+                    <option value="wash" ${d.act3[2] === 'wash' ? 'selected' : ''}>wash</option>
+                  </select>
+                  the banana pieces, a glass of cold milk, and honey into a blender. Next,
+                  <strong>(4)</strong>
+                  <select id="lkpdAct3_3" class="px-2 py-1 rounded-lg border border-blue-300 bg-blue-50 font-bold text-blue-900">
+                    <option value="">-- pilih --</option>
+                    <option value="blend" ${d.act3[3] === 'blend' ? 'selected' : ''}>blend</option>
+                    <option value="fry" ${d.act3[3] === 'fry' ? 'selected' : ''}>fry</option>
+                  </select>
+                  all the ingredients until smooth.
+                  <strong>(5)</strong>
+                  <select id="lkpdAct3_4" class="px-2 py-1 rounded-lg border border-blue-300 bg-blue-50 font-bold text-blue-900">
+                    <option value="">-- pilih --</option>
+                    <option value="Finally" ${d.act3[4] === 'Finally' ? 'selected' : ''}>Finally</option>
+                    <option value="First" ${d.act3[4] === 'First' ? 'selected' : ''}>First</option>
+                  </select>,
+                  pour the milkshake into a tall glass and serve chilled.
+                </div>
+              </div>
+
+              <!-- ACTIVITY 4 -->
+              <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-4">
+                <h4 class="font-extrabold text-blue-900 text-base">ACTIVITY 4 – ARRANGE THE STEPS (2 Latihan)</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <!-- Exercise 4A -->
+                  <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+                    <p class="font-bold text-xs text-orange-700">Latihan 4A: How to Make Strawberry Smoothie</p>
+                    ${d.act4_a.map((stepIdx, pos) => `
+                      <div class="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                        <span><strong>${pos + 1}.</strong> ${LKPD_ACT4A_STEPS[stepIdx]}</span>
+                        <div class="flex gap-1 shrink-0">
+                          <button onclick="moveLKPD4('a', ${pos}, -1)" ${pos === 0 ? 'disabled' : ''} class="px-1.5 py-0.5 bg-white border rounded disabled:opacity-30">⬆️</button>
+                          <button onclick="moveLKPD4('a', ${pos}, 1)" ${pos === 3 ? 'disabled' : ''} class="px-1.5 py-0.5 bg-white border rounded disabled:opacity-30">⬇️</button>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+
+                  <!-- Exercise 4B -->
+                  <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+                    <p class="font-bold text-xs text-blue-700">Latihan 4B: How to Withdraw Money from an ATM</p>
+                    ${d.act4_b.map((stepIdx, pos) => `
+                      <div class="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                        <span><strong>${pos + 1}.</strong> ${LKPD_ACT4B_STEPS[stepIdx]}</span>
+                        <div class="flex gap-1 shrink-0">
+                          <button onclick="moveLKPD4('b', ${pos}, -1)" ${pos === 0 ? 'disabled' : ''} class="px-1.5 py-0.5 bg-white border rounded disabled:opacity-30">⬆️</button>
+                          <button onclick="moveLKPD4('b', ${pos}, 1)" ${pos === 3 ? 'disabled' : ''} class="px-1.5 py-0.5 bg-white border rounded disabled:opacity-30">⬇️</button>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTIVITY 5 -->
+              <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2">
+                <h4 class="font-extrabold text-blue-900 text-base">ACTIVITY 5 – CREATE YOUR OWN PROCEDURE TEXT</h4>
+                <p class="text-xs text-slate-600">Tuliskan satu teks prosedur lengkap berdasarkan kehidupan sehari-hari Anda (Goal, Materials, dan Steps):</p>
+                <textarea id="lkpdAct5" rows="5" placeholder="Title/Goal: ...&#10;Materials: ...&#10;Steps:&#10;1. First, ...&#10;2. Second, ..." class="w-full p-3 rounded-xl border border-slate-300 text-xs sm:text-sm">${escapeHtml(d.act5)}</textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function collectLKPDInputs() {
+      appState.lkpdData.name = document.getElementById('lkpdName')?.value || '';
+      appState.lkpdData.studentClass = document.getElementById('lkpdClass')?.value || '';
+      appState.lkpdData.group = document.getElementById('lkpdGroup')?.value || '';
+      appState.lkpdData.act1_goal = document.getElementById('lkpdAct1Goal')?.value || '';
+      appState.lkpdData.act1_materials = document.getElementById('lkpdAct1Mat')?.value || '';
+      appState.lkpdData.act1_steps = document.getElementById('lkpdAct1Steps')?.value || '';
+      appState.lkpdData.act2_imp = document.getElementById('lkpdAct2Imp')?.value || '';
+      appState.lkpdData.act2_act = document.getElementById('lkpdAct2Act')?.value || '';
+      appState.lkpdData.act2_conn = document.getElementById('lkpdAct2Conn')?.value || '';
+      appState.lkpdData.act3 = [
+        document.getElementById('lkpdAct3_0')?.value || '',
+        document.getElementById('lkpdAct3_1')?.value || '',
+        document.getElementById('lkpdAct3_2')?.value || '',
+        document.getElementById('lkpdAct3_3')?.value || '',
+        document.getElementById('lkpdAct3_4')?.value || ''
+      ];
+      appState.lkpdData.act5 = document.getElementById('lkpdAct5')?.value || '';
+    }
+
+    function moveLKPD4(which, pos, dir) {
+      collectLKPDInputs();
+      const arr = which === 'a' ? appState.lkpdData.act4_a : appState.lkpdData.act4_b;
+      const target = pos + dir;
+      if (target < 0 || target >= arr.length) return;
+      const tmp = arr[pos];
+      arr[pos] = arr[target];
+      arr[target] = tmp;
+      playSFX('click');
+      saveState();
+      renderApp();
+    }
+
+    function saveLKPD() {
+      collectLKPDInputs();
+      saveState();
+      playSFX('correct');
+      showToast('LKPD berhasil disimpan di perangkat Anda!', '💾');
+    }
+
+    function checkLKPDAnswers() {
+      collectLKPDInputs();
+      const expected3 = ['First', 'peel', 'put', 'blend', 'Finally'];
+      let act3Correct = 0;
+      expected3.forEach((ans, i) => {
+        if (appState.lkpdData.act3[i] === ans) act3Correct++;
+      });
+      const act4aCorrect = appState.lkpdData.act4_a.every((val, idx) => val === idx);
+      const act4bCorrect = appState.lkpdData.act4_b.every((val, idx) => val === idx);
+
+      lkpdScoreFeedback = `📊 Hasil Pemeriksaan Otomatis LKPD: Activity 3 (Teks Rumpang): ${act3Correct}/5 benar | Activity 4A: ${act4aCorrect ? '✅ Urutan Benar' : '❌ Belum Urut'} | Activity 4B: ${act4bCorrect ? '✅ Urutan Benar' : '❌ Belum Urut'}.`;
+
+      if (act3Correct === 5 && act4aCorrect && act4bCorrect) {
+        playSFX('fanfare');
+        markCompleted('lkpd');
+      } else {
+        playSFX('click');
+      }
+      saveState();
+      renderApp();
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 7: MENU 6 – EVALUASI (TEPAT 20 SOAL: 15 PG, 3 T/F, 2 ARRANGE STEPS)
+       ------------------------------------------------------------------------- */
+    const EVAL_QUESTIONS = [
+      // 1-15: Multiple Choice
+      {
+        type: 'mc',
+        question: 'What is the primary social function of a Procedure Text?',
+        options: [
+          'To amuse readers with an imaginative legend',
+          'To explain how to make or do something through sequential steps',
+          'To argue about a controversial issue in society',
+          'To retell past personal experiences chronologically'
+        ],
+        answer: 1,
+        explanation: 'Fungsi sosial Procedure Text adalah menjelaskan cara membuat atau melakukan sesuatu melalui langkah-langkah yang berurutan.'
+      },
+      {
+        type: 'mc',
+        question: 'Which of the following is the correct Generic Structure of a Procedure Text?',
+        options: [
+          'Orientation – Complication – Resolution',
+          'Identification – Description',
+          'Goal – Materials/Ingredients – Steps',
+          'Thesis – Arguments – Reiteration'
+        ],
+        answer: 2,
+        explanation: 'Struktur generik teks prosedur terdiri dari Goal (tujuan), Materials/Ingredients (bahan/alat), dan Steps (langkah-langkah).'
+      },
+      {
+        type: 'mc',
+        question: 'Which sentence is written in the imperative form?',
+        options: [
+          'The chef is slicing the fresh carrots.',
+          'Slice the fresh carrots into thin rounds!',
+          'She sliced the fresh carrots yesterday.',
+          'Fresh carrots are sliced by the chef.'
+        ],
+        answer: 1,
+        explanation: 'Kalimat imperatif diawali langsung dengan kata kerja dasar (Verb 1) seperti "Slice..." untuk memberikan instruksi.'
+      },
+      {
+        type: 'mc',
+        question: 'Identify the sequence connector in the sentence: "After that, pour the hot water into the teapot."',
+        options: ['pour', 'After that', 'hot water', 'into the teapot'],
+        answer: 1,
+        explanation: '"After that" adalah sequence connector yang menghubungkan langkah sebelumnya dengan langkah berikutnya.'
+      },
+      {
+        type: 'mc',
+        question: 'Which tense is predominantly used in Procedure Text?',
+        options: ['Simple Past Tense', 'Past Continuous Tense', 'Simple Present Tense', 'Future Perfect Tense'],
+        answer: 2,
+        explanation: 'Procedure text menggunakan Simple Present Tense (Verb 1) karena instruksi berlaku secara umum.'
+      },
+      {
+        type: 'mc',
+        question: 'Look at the instruction: "Stir the soup gently for five minutes." The word "gently" functions as...',
+        options: ['An action verb', 'An adverb of manner', 'A sequence connector', 'A quantifier'],
+        answer: 1,
+        explanation: '"Gently" (dengan perlahan/lembut) adalah adverb of manner yang menjelaskan bagaimana cara mengaduk sup.'
+      },
+      {
+        type: 'mc',
+        question: 'Which group of words consists ONLY of action verbs commonly used in recipes?',
+        options: [
+          'chop, boil, peel, fry',
+          'first, next, then, finally',
+          'knife, spoon, bowl, pan',
+          'carefully, slowly, evenly, well'
+        ],
+        answer: 0,
+        explanation: 'Chop (mencincang), boil (merebus), peel (mengupas), dan fry (menggoreng) semuanya adalah action verbs.'
+      },
+      {
+        type: 'mc',
+        question: 'Read the snippet: "Plug the power cord into the electrical outlet, then press the POWER button." What is the goal of this text most likely about?',
+        options: [
+          'How to make a fruit salad',
+          'How to operate an electronic device',
+          'How to plant a mango tree',
+          'How to wash a bicycle'
+        ],
+        answer: 1,
+        explanation: 'Adanya kata "power cord", "electrical outlet", dan "POWER button" menunjukkan cara mengoperasikan perangkat elektronik.'
+      },
+      {
+        type: 'mc',
+        question: 'What does the action verb "squeeze" mean in Indonesian?',
+        options: ['Mengupas', 'Memeras', 'Menggoreng', 'Memanggang'],
+        answer: 1,
+        explanation: '"Squeeze" berarti memeras (misalnya memeras jeruk atau lemon).'
+      },
+      {
+        type: 'mc',
+        question: '"_____ the blender cord before cleaning the blades to avoid electric shock." Which verb best completes the safety instruction?',
+        options: ['Plug in', 'Unplug', 'Turn on', 'Press'],
+        answer: 1,
+        explanation: '"Unplug" (cabut kabel listrik) adalah langkah keselamatan wajib sebelum membersihkan pisau blender.'
+      },
+      {
+        type: 'mc',
+        question: 'In a Procedure Text, the section that lists "2 cloves of garlic, 1 egg, and 2 tablespoons of soy sauce" is called...',
+        options: ['Goal', 'Ingredients', 'Steps', 'Conclusion'],
+        answer: 1,
+        explanation: 'Daftar bahan makanan disebut "Ingredients" (atau bagian dari Materials).'
+      },
+      {
+        type: 'mc',
+        question: 'Which sequence connector is most appropriate for the LAST step of a procedure?',
+        options: ['First of all', 'Second', 'Meanwhile', 'Finally'],
+        answer: 3,
+        explanation: '"Finally" digunakan untuk menandai langkah terakhir dalam rangkaian instruksi.'
+      },
+      {
+        type: 'mc',
+        question: 'Read the text: "First, wet your hands with clean water. Second, apply soap and rub your palms for 20 seconds. Next, rinse thoroughly. Finally, dry with a clean towel." How long should you rub your palms with soap?',
+        options: ['10 seconds', '20 seconds', '1 minute', '2 minutes'],
+        answer: 1,
+        explanation: 'Berdasarkan kalimat kedua: "...rub your palms for 20 seconds."'
+      },
+      {
+        type: 'mc',
+        question: 'Which title represents the "How to Do Something" category of Procedure Text?',
+        options: [
+          'How to Make Chocolate Brownies',
+          'How to Use a Digital Camera',
+          'How to Manage Study Time Effectively',
+          'How to Make Iced Coffee'
+        ],
+        answer: 2,
+        explanation: '"How to Manage Study Time Effectively" adalah panduan melakukan suatu aktivitas/kebiasaan (How to do something).'
+      },
+      {
+        type: 'mc',
+        question: 'What is the synonym of the word "Aim" in the structure of Procedure Text?',
+        options: ['Steps', 'Goal', 'Tools', 'Methods'],
+        answer: 1,
+        explanation: 'Goal dan Aim memiliki makna yang sama yaitu tujuan teks prosedur.'
+      },
+
+      // 16-18: True or False (3 Soal)
+      {
+        type: 'tf',
+        question: 'TRUE or FALSE: Procedure text always requires a "Materials/Ingredients" section even when giving simple physical exercise instructions.',
+        options: ['TRUE', 'FALSE'],
+        answer: 1,
+        explanation: 'FALSE. Bagian Materials/Ingredients bersifat opsional apabila prosedur tidak memerlukan alat atau bahan tertentu.'
+      },
+      {
+        type: 'tf',
+        question: 'TRUE or FALSE: Imperative sentences in Procedure Text typically begin with the base form of a verb (Verb 1), such as "Mix", "Pour", or "Cut".',
+        options: ['TRUE', 'FALSE'],
+        answer: 0,
+        explanation: 'TRUE. Kalimat perintah dalam teks prosedur diawali kata kerja bentuk dasar (Verb 1).'
+      },
+      {
+        type: 'tf',
+        question: 'TRUE or FALSE: The word "Finally" should be placed at the very beginning of the first step in a Procedure Text.',
+        options: ['TRUE', 'FALSE'],
+        answer: 1,
+        explanation: 'FALSE. "Finally" digunakan pada langkah terakhir, sedangkan langkah pertama menggunakan "First".'
+      },
+
+      // 19-20: Arrange the Steps (2 Soal)
+      {
+        type: 'arrange',
+        question: 'ARRANGE THE STEPS (Soal 19): Susun langkah membuat secangkir kopi instan (How to Make a Cup of Instant Coffee) dari urutan 1 hingga 4:',
+        items: [
+          'First, boil a glass of clean water.',
+          'Second, put one sachet of instant coffee into a cup.',
+          'Next, pour the hot water into the cup.',
+          'Finally, stir well and serve the coffee warm.'
+        ],
+        explanation: 'Urutan logis membuat kopi instan: (1) Didihkan air, (2) Masukkan kopi ke cangkir, (3) Tuang air panas, (4) Aduk rata dan sajikan.'
+      },
+      {
+        type: 'arrange',
+        question: 'ARRANGE THE STEPS (Soal 20): Susun langkah mengirim email (How to Send an Email) dari urutan 1 hingga 4:',
+        items: [
+          'First, open your email application and click Compose.',
+          'Second, type the recipient email address and subject.',
+          'Next, write your message clearly in the email body.',
+          'Finally, check your message and click the Send button.'
+        ],
+        explanation: 'Urutan logis mengirim email: (1) Buka aplikasi & klik Compose, (2) Isi alamat penerima & subjek, (3) Tulis isi pesan, (4) Periksa & klik Send.'
+      }
+    ];
+
+    let showEvalReview = false;
+
+    function getGradePredicate(score) {
+      if (score >= 90) return { label: 'Excellent', color: 'text-emerald-700 bg-emerald-100 border-emerald-300' };
+      if (score >= 80) return { label: 'Very Good', color: 'text-blue-700 bg-blue-100 border-blue-300' };
+      if (score >= 70) return { label: 'Good', color: 'text-amber-800 bg-amber-100 border-amber-300' };
+      if (score >= 60) return { label: 'Fair', color: 'text-orange-800 bg-orange-100 border-orange-300' };
+      return { label: 'Keep Practicing', color: 'text-rose-800 bg-rose-100 border-rose-300' };
+    }
+
+    function renderEvaluasiPage() {
+      const ev = appState.evalState;
+
+      // 1. Pre-Start Screen (Identitas Siswa)
+      if (!ev.started && !ev.submitted) {
+        return `
+          <section class="fade-slide-in max-w-2xl mx-auto">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-blue-100 space-y-5">
+              <div class="text-center space-y-2">
+                <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-extrabold">MENU 6 • FINAL ASSESSMENT</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-950">FINAL ASSESSMENT – PROCEDURE TEXT</h2>
+                <p class="text-xs sm:text-sm text-slate-600">20 Soal Evaluasi (15 Multiple Choice • 3 True/False • 2 Arrange the Steps)</p>
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 text-xs sm:text-sm text-blue-950 space-y-1.5">
+                <p class="font-extrabold">📋 Petunjuk Pengerjaan:</p>
+                <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                  <li>Isi <strong>Nama Siswa</strong> dan <strong>Kelas</strong> sebelum memulai evaluasi.</li>
+                  <li>Setiap soal bernilai <strong>5 poin</strong> (Nilai Maksimal = <strong>100</strong>).</li>
+                  <li>Soal ditampilkan <strong>satu soal per halaman</strong>. Anda dapat berpindah menggunakan tombol <strong>PREVIOUS</strong> dan <strong>NEXT</strong>.</li>
+                  <li>Jawaban dapat diubah sebelum menekan tombol <strong>SUBMIT</strong>.</li>
+                </ul>
+              </div>
+
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Siswa *</label>
+                  <input id="evalInputName" type="text" value="${escapeHtml(ev.studentName)}" placeholder="Masukkan nama lengkap Anda..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm"/>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Kelas *</label>
+                  <input id="evalInputClass" type="text" value="${escapeHtml(ev.studentClass)}" placeholder="Contoh: XI-A" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:outline-none text-sm"/>
+                </div>
+              </div>
+
+              <button onclick="startEvaluation()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 text-white font-extrabold text-sm sm:text-base shadow-lg transition">
+                🚀 MULAI EVALUASI (20 SOAL)
+              </button>
+            </div>
+          </section>
+        `;
+      }
+
+      // 2. Result & Review Screen (After Submit)
+      if (ev.submitted) {
+        let correctCount = 0;
+        const details = EVAL_QUESTIONS.map((q, idx) => {
+          const userAns = ev.answers[idx];
+          let isCorrect = false;
+          if (q.type === 'arrange') {
+            isCorrect = Array.isArray(userAns) && userAns.length === 4 && userAns.every((v, i) => v === i);
+          } else {
+            isCorrect = userAns === q.answer;
+          }
+          if (isCorrect) correctCount++;
+          return { q, idx, userAns, isCorrect };
+        });
+
+        const wrongCount = 20 - correctCount;
+        const finalScore = correctCount * 5;
+        const predicate = getGradePredicate(finalScore);
+
+        return `
+          <section class="fade-slide-in space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-blue-100 space-y-6">
+              <div class="text-center space-y-2">
+                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-extrabold">HASIL AKHIR EVALUASI</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-950">FINAL ASSESSMENT RESULT</h2>
+                <p class="text-sm font-semibold text-slate-600">Nama: <strong class="text-blue-900">${escapeHtml(ev.studentName)}</strong> • Kelas: <strong class="text-blue-900">${escapeHtml(ev.studentClass)}</strong></p>
+              </div>
+
+              <!-- Score Summary Cards -->
+              <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                  <span class="text-xs font-bold text-emerald-700 block">BENAR</span>
+                  <span class="text-2xl font-extrabold text-emerald-800">${correctCount}</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
+                  <span class="text-xs font-bold text-rose-700 block">SALAH</span>
+                  <span class="text-2xl font-extrabold text-rose-800">${wrongCount}</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200">
+                  <span class="text-xs font-bold text-blue-700 block">NILAI AKHIR</span>
+                  <span class="text-3xl font-extrabold text-blue-900">${finalScore}</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                  <span class="text-xs font-bold text-amber-800 block">PERSENTASE</span>
+                  <span class="text-2xl font-extrabold text-amber-900">${finalScore}%</span>
+                </div>
+                <div class="col-span-2 md:col-span-1 p-4 rounded-2xl border ${predicate.color} flex flex-col justify-center">
+                  <span class="text-xs font-bold block">PREDIKAT</span>
+                  <span class="text-base sm:text-lg font-extrabold">${predicate.label}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap justify-center gap-3 pt-2">
+                <button onclick="toggleEvalReview()" class="px-5 py-3 rounded-2xl bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow">
+                  🔍 ${showEvalReview ? 'SEMBUNYIKAN PEMBAHASAN' : 'REVIEW ANSWERS & PEMBAHASAN'}
+                </button>
+                <button onclick="retryEvaluation()" class="px-5 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm shadow">
+                  🔄 TRY AGAIN
+                </button>
+              </div>
+            </div>
+
+            ${showEvalReview ? `
+              <div class="space-y-4 fade-slide-in">
+                <h3 class="text-xl font-extrabold text-blue-950">📖 Pembahasan Lengkap 20 Soal</h3>
+                ${details.map(item => {
+                  let userText = 'Tidak dijawab';
+                  let correctText = '';
+                  if (item.q.type === 'arrange') {
+                    userText = Array.isArray(item.userAns) ? item.userAns.map(i => item.q.items[i]).join(' → ') : 'Belum diurutkan';
+                    correctText = item.q.items.join(' → ');
+                  } else {
+                    userText = item.userAns !== null ? item.q.options[item.userAns] : 'Tidak dijawab';
+                    correctText = item.q.options[item.q.answer];
+                  }
+                  return `
+                    <div class="bg-white rounded-2xl p-5 border-2 ${item.isCorrect ? 'border-emerald-300' : 'border-rose-300'} shadow-sm space-y-2">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full ${item.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                          Soal ${item.idx + 1} • ${item.isCorrect ? '✅ BENAR (+5)' : '❌ SALAH (0)'}
+                        </span>
+                      </div>
+                      <p class="font-bold text-slate-900 text-sm">${item.q.question}</p>
+                      <p class="text-xs text-slate-700"><strong>Jawaban Anda:</strong> ${userText}</p>
+                      ${!item.isCorrect ? `<p class="text-xs text-emerald-800"><strong>Kunci Jawaban:</strong> ${correctText}</p>` : ''}
+                      <div class="p-3 rounded-xl bg-blue-50 text-xs text-blue-950">
+                        <strong>Pembahasan:</strong> ${item.q.explanation}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </section>
+        `;
+      }
+
+      // 3. Active Question Screen (1 Question Per Page)
+      const qIdx = ev.currentQ;
+      const q = EVAL_QUESTIONS[qIdx];
+      const answeredCount = ev.answers.filter(a => a !== null).length;
+
+      let questionBody = '';
+      if (q.type === 'mc' || q.type === 'tf') {
+        questionBody = `
+          <div class="space-y-2.5">
+            ${q.options.map((opt, idx) => {
+              const selected = ev.answers[qIdx] === idx;
+              return `
+                <button onclick="selectEvalOption(${qIdx}, ${idx})" class="w-full text-left p-4 rounded-2xl border-2 font-semibold text-sm transition flex items-center gap-3 ${selected ? 'bg-blue-700 border-blue-800 text-white shadow-md' : 'bg-white border-slate-200 hover:border-blue-400 text-slate-800'}">
+                  <span class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs shrink-0 ${selected ? 'bg-amber-400 text-blue-950' : 'bg-blue-50 text-blue-800'}">
+                    ${q.type === 'tf' ? (idx === 0 ? 'T' : 'F') : String.fromCharCode(65 + idx)}
+                  </span>
+                  <span>${opt}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else if (q.type === 'arrange') {
+        // Initialize shuffled order if not yet set
+        if (!Array.isArray(ev.answers[qIdx])) {
+          ev.answers[qIdx] = [2, 0, 3, 1];
+        }
+        const currentOrder = ev.answers[qIdx];
+        questionBody = `
+          <div class="space-y-2.5">
+            <p class="text-xs text-slate-500 font-semibold">Gunakan tombol panah ⬆️ ⬇️ untuk menyusun urutan langkah dari 1 sampai 4:</p>
+            ${currentOrder.map((itemIdx, pos) => `
+              <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border-2 border-blue-200">
+                <div class="flex items-center gap-3">
+                  <span class="w-7 h-7 rounded-lg bg-orange-500 text-white font-extrabold text-xs flex items-center justify-center shrink-0">${pos + 1}</span>
+                  <span class="font-bold text-slate-800 text-xs sm:text-sm">${q.items[itemIdx]}</span>
+                </div>
+                <div class="flex gap-1 shrink-0">
+                  <button onclick="moveEvalArrange(${qIdx}, ${pos}, -1)" ${pos === 0 ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:bg-blue-100 disabled:opacity-30 font-bold text-xs">⬆️</button>
+                  <button onclick="moveEvalArrange(${qIdx}, ${pos}, 1)" ${pos === 3 ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:bg-blue-100 disabled:opacity-30 font-bold text-xs">⬇️</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      const typeBadge = q.type === 'mc' ? 'Multiple Choice' : q.type === 'tf' ? 'True or False' : 'Arrange the Steps';
+
+      return `
+        <section class="fade-slide-in max-w-4xl mx-auto space-y-5">
+          <!-- Top Status Bar -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-blue-100 flex flex-wrap items-center justify-between gap-2">
+            <div class="text-xs sm:text-sm font-bold text-blue-950">
+              👤 ${escapeHtml(ev.studentName)} (${escapeHtml(ev.studentClass)})
+            </div>
+            <div class="text-xs font-extrabold text-orange-600">
+              Terjawab: ${answeredCount} / 20 Soal
+            </div>
+          </div>
+
+          <!-- Question Card -->
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border-2 border-blue-100 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-3 py-1 rounded-full bg-blue-700 text-white text-xs font-extrabold">QUESTION ${qIdx + 1} OF 20</span>
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold">${typeBadge} • 5 Poin</span>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900 leading-relaxed">${q.question}</h3>
+
+            ${questionBody}
+
+            <!-- Previous / Next / Submit Controls -->
+            <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <button onclick="prevEvalQuestion()" ${qIdx === 0 ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 disabled:opacity-40 text-slate-800 font-bold text-xs sm:text-sm">
+                ⬅️ PREVIOUS
+              </button>
+
+              ${qIdx < 19 ? `
+                <button onclick="nextEvalQuestion()" class="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow">
+                  NEXT ➡️
+                </button>
+              ` : `
+                <button onclick="confirmSubmitEvaluation()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs sm:text-sm shadow-lg">
+                  🏁 SUBMIT ANSWERS
+                </button>
+              `}
+            </div>
+          </div>
+
+          <!-- Question Navigator Grid -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-slate-500">Navigasi Nomor Soal:</span>
+              <button onclick="confirmSubmitEvaluation()" class="text-xs font-extrabold text-emerald-700 hover:underline">Selesai & Kumpulkan Jawaban →</button>
+            </div>
+            <div class="grid grid-cols-10 gap-1.5">
+              ${EVAL_QUESTIONS.map((_, idx) => {
+                const isAns = ev.answers[idx] !== null;
+                const isCurr = idx === qIdx;
+                return `
+                  <button onclick="jumpEvalQuestion(${idx})" class="py-1.5 rounded-lg text-xs font-extrabold border transition ${isCurr ? 'bg-orange-500 text-white border-orange-600' : isAns ? 'bg-blue-100 text-blue-900 border-blue-300' : 'bg-slate-50 text-slate-500 border-slate-200'}">
+                    ${idx + 1}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function startEvaluation() {
+      const name = document.getElementById('evalInputName')?.value.trim();
+      const cls = document.getElementById('evalInputClass')?.value.trim();
+      if (!name || !cls) {
+        playSFX('wrong');
+        showToast('Harap isi Nama Lengkap dan Kelas terlebih dahulu!', '⚠️');
+        return;
+      }
+      playSFX('click');
+      appState.evalState.studentName = name;
+      appState.evalState.studentClass = cls;
+      appState.evalState.started = true;
+      appState.evalState.currentQ = 0;
+      saveState();
+      renderApp();
+    }
+
+    function selectEvalOption(qIdx, optIdx) {
+      playSFX('click');
+      appState.evalState.answers[qIdx] = optIdx;
+      saveState();
+      renderApp();
+    }
+
+    function moveEvalArrange(qIdx, pos, dir) {
+      const arr = appState.evalState.answers[qIdx];
+      const target = pos + dir;
+      if (target < 0 || target >= arr.length) return;
+      const tmp = arr[pos];
+      arr[pos] = arr[target];
+      arr[target] = tmp;
+      playSFX('click');
+      saveState();
+      renderApp();
+    }
+
+    function prevEvalQuestion() {
+      if (appState.evalState.currentQ > 0) {
+        playSFX('click');
+        appState.evalState.currentQ--;
+        renderApp();
+      }
+    }
+    function nextEvalQuestion() {
+      if (appState.evalState.currentQ < 19) {
+        playSFX('click');
+        appState.evalState.currentQ++;
+        renderApp();
+      }
+    }
+    function jumpEvalQuestion(idx) {
+      playSFX('click');
+      appState.evalState.currentQ = idx;
+      renderApp();
+    }
+
+    function confirmSubmitEvaluation() {
+      playSFX('click');
+      const answeredCount = appState.evalState.answers.filter(a => a !== null).length;
+      const html = `
+        <p class="text-slate-700">Anda telah menjawab <strong>${answeredCount} dari 20 soal</strong>.</p>
+        <p class="text-slate-600 text-sm">Apakah Anda yakin ingin mengumpulkan jawaban sekarang? Setelah dikumpulkan, jawaban tidak dapat diubah lagi.</p>
+        <div class="pt-3 flex justify-end gap-2">
+          <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm">Batal, Periksa Lagi</button>
+          <button onclick="finalizeEvaluation()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm">✅ Ya, Kumpulkan Sekarang</button>
+        </div>
+      `;
+      openModal('🏁 Konfirmasi Pengumpulan Jawaban', html);
+    }
+
+    function finalizeEvaluation() {
+      closeModal();
+      appState.evalState.submitted = true;
+      showEvalReview = false;
+      playSFX('fanfare');
+      markCompleted('evaluasi');
+      saveState();
+      renderApp();
+    }
+
+    function toggleEvalReview() {
+      playSFX('click');
+      showEvalReview = !showEvalReview;
+      renderApp();
+    }
+
+    function retryEvaluation() {
+      playSFX('click');
+      appState.evalState.started = false;
+      appState.evalState.submitted = false;
+      appState.evalState.currentQ = 0;
+      appState.evalState.answers = Array(20).fill(null);
+      showEvalReview = false;
+      saveState();
+      renderApp();
+    }
+
+    /* -------------------------------------------------------------------------
+       VIEW 8: MENU 7 – PENGEMBANG (DEVELOPER PROFILE)
+       ------------------------------------------------------------------------- */
+    function renderPengembangPage() {
+      return `
+        <section class="fade-slide-in max-w-4xl mx-auto">
+          <div class="bg-white rounded-[2rem] shadow-xl border-2 border-blue-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-900 via-blue-700 to-orange-500 h-32 sm:h-40 relative">
+              <div class="absolute -bottom-14 left-6 sm:left-10 w-28 h-28 rounded-3xl bg-white p-1.5 shadow-xl border-2 border-amber-400">
+                <div class="w-full h-full rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white text-5xl">
+                  👩‍🏫
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-18 sm:pt-16 px-6 sm:px-10 pb-8 space-y-6 mt-4">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold border border-amber-300">MENU 7 • PROFIL PENGEMBANG MPI</span>
+                  <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-950 mt-2">ULFA WAHIDAH, S.Pd., M.Si.</h2>
+                  <p class="text-sm sm:text-base font-bold text-orange-600">Guru Bahasa Inggris • SMA TQ HIDAYATUL MUBTADI-IEN</p>
+                </div>
+                <button onclick="speakText('Profil Pengembang Media Pembelajaran Interaktif. Nama: Ulfa Wahidah, S.Pd., M.Si. Profesi: Guru Bahasa Inggris di SMA TQ Hidayatul Mubtadi-ien. Materi: Procedure Text Kelas 11 Fase F, Tahun Pelajaran 2026 2027. Semoga media pembelajaran ini dapat meningkatkan motivasi, kreativitas, dan kemampuan berbahasa Inggris peserta didik.', 'id-ID')" class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow">
+                  🔊 Dengarkan Profil
+                </button>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-100">
+                  <span class="text-xs font-bold text-blue-700 block">NAMA LENGKAP</span>
+                  <strong class="text-blue-950">ULFA WAHIDAH, S.Pd., M.Si.</strong>
+                </div>
+                <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-100">
+                  <span class="text-xs font-bold text-blue-700 block">PROFESI</span>
+                  <strong class="text-blue-950">Guru Bahasa Inggris</strong>
+                </div>
+                <div class="p-4 rounded-2xl bg-orange-50/70 border border-orange-100">
+                  <span class="text-xs font-bold text-orange-700 block">SATUAN PENDIDIKAN / INSTANSI</span>
+                  <strong class="text-orange-950">SMA TQ HIDAYATUL MUBTADI-IEN</strong>
+                </div>
+                <div class="p-4 rounded-2xl bg-orange-50/70 border border-orange-100">
+                  <span class="text-xs font-bold text-orange-700 block">PRODUK & KURIKULUM</span>
+                  <strong class="text-orange-950">Media Pembelajaran Interaktif (MPI) • Kurikulum Merdeka</strong>
+                </div>
+                <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200">
+                  <span class="text-xs font-bold text-amber-800 block">MATERI & JENJANG</span>
+                  <strong class="text-amber-950">Procedure Text • Kelas XI SMA – Fase F</strong>
+                </div>
+                <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200">
+                  <span class="text-xs font-bold text-amber-800 block">TAHUN PELAJARAN</span>
+                  <strong class="text-amber-950">2026 / 2027</strong>
+                </div>
+              </div>
+
+              <div class="p-6 rounded-3xl bg-gradient-to-r from-blue-800 to-indigo-900 text-white text-center space-y-2 shadow-md">
+                <span class="text-2xl">✨</span>
+                <p class="text-sm sm:text-base font-bold italic leading-relaxed">
+                  "Semoga media pembelajaran ini dapat meningkatkan motivasi, kreativitas, dan kemampuan berbahasa Inggris peserta didik."
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON WINDOW LOAD
+       ========================================================================= */
+    window.onload = function () {
+      loadState();
+      updateAudioButtonsUI();
+      renderApp();
+    };
+  </script>
+</body>
+</html>
